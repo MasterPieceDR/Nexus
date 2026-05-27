@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffe4e9"/>
+      <stop offset="1" stop-color="#f3f4f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="1200" rx="80" fill="url(#g)"/>
+  <circle cx="450" cy="470" r="145" fill="#e60023" opacity="0.12"/>
+  <path d="M330 708h240c35 0 61 32 53 66l-19 82H296l-19-82c-8-34 18-66 53-66Z" fill="#e60023" opacity="0.18"/>
+  <text x="450" y="510" text-anchor="middle" font-family="Arial" font-size="74" font-weight="700" fill="#e60023">P</text>
+  <text x="450" y="930" text-anchor="middle" font-family="Arial" font-size="38" font-weight="700" fill="#1f1f1f">PinCloud</text>
+</svg>
