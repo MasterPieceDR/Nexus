@@ -1,187 +1,114 @@
-# Pinterest Fullstack
+# Nexus 🚀
 
-Aplicación web multimedia tipo Pinterest usando HTML, CSS, JavaScript vanilla, FastAPI, SQL Server, AWS S3, EC2, IAM y Terraform.
+Plataforma web de conocimiento visual con arquitectura en Microsoft SQL Server (`pyodbc`), FastAPI y Vanilla JS.
+Diseñada bajo una estética *Hacker / Cyberpunk* (Dark Theme puro con acentos Verde Neón).
 
-## Estructura
+## Características
+- **Mapeo Visual de Nodos**: Diseño Masonry responsivo organizado por Constelaciones.
+- **Identidad Hacker/Matrix**: Interfaz inmersiva con fondos `#000000`, tarjetas *Glassmorphism* verde oscuro, y tipografía de alto contraste.
+- **Backend Moderno**: API REST en FastAPI.
+- **Persistencia Nativa**: SQL Server interactuando mediante T-SQL y Stored Procedures (Sin ORM).
+- **Almacenamiento Cloud**: Integración con AWS S3 e IAM para alojamiento de evidencias multimedia.
+- **Decisiones Éticas (Rúbrica)**: Control de moderación (Aprobación/Rechazo de nodos), Roles de Usuario y Trazabilidad (AuditLog).
 
-```txt
-pincloud_fullstack/
-├── front/
-│   ├── html/
-│   ├── estilos/
-│   ├── javascript/
-│   └── assets/
-├── backend/
-│   ├── app/
-│   │   ├── models/
-│   │   ├── rutas/
-│   │   ├── esquemas/
-│   │   ├── seguridad/
-│   │   └── services/
-│   ├── sql/
-│   ├── main.py
-│   ├── requirements.txt
-│   └── .env.example
-├── infra/
-│   ├── providers.tf
-│   ├── variables.tf
-│   ├── s3.tf
-│   ├── iam.tf
-│   ├── ec2.tf
-│   ├── outputs.tf
-│   └── terraform.tfvars.example
-├── scripts/
-└── docker-compose.yml
-```
+---
 
-## Ejecución local
+## 🛠️ Tecnologías y Arquitectura
 
-### 1. Crear base de datos SQL Server
+- **Backend:** Python (FastAPI).
+- **Base de Datos:** SQL Server (Raw SQL usando `pyodbc`). No se utilizan ORMs para garantizar rendimiento puro y trazabilidad estricta.
+- **Almacenamiento en la Nube:** AWS S3 (vía pre-signed URLs para carga segura de archivos).
+- **Frontend:** Vanilla JavaScript, HTML5 Semántico, CSS (Variables y Grid).
+- **Seguridad:** JSON Web Tokens (JWT), encriptación de contraseñas con bcrypt, y segmentación de permisos basada en Roles (RBAC).
 
-Ejecuta `backend/sql/init.sql` en SQL Server Management Studio.
+---
 
-También puedes levantar SQL Server con Docker:
+## 🛡️ Mecanismos Éticos Implementados (Rúbrica)
 
-```bash
-docker compose up -d
-```
+Para cumplir con las regulaciones éticas de contenido e impacto al usuario, la aplicación implementa de forma obligatoria los siguientes mecanismos:
 
-Después ejecuta el script SQL contra el servidor local.
+1. **Control de Publicación (Moderación Preventiva):** Las publicaciones creadas por los usuarios no se muestran al público de forma inmediata. Se guardan con el estado `PENDING_REVIEW` y requieren la aprobación manual de un Administrador.
+2. **Restricciones de Acceso:** El backend valida de forma estricta los roles embebidos en el token JWT. Endpoints sensibles (como aprobar o rechazar publicaciones) están restringidos únicamente a usuarios con privilegios (`RoleId = 1`).
+3. **Filtro de Contenido por Comunidad:** Los usuarios están empoderados para auto-regular la plataforma. Se habilitó un endpoint de reportes que guarda la trazabilidad exacta (quién denuncia, qué publicación y por qué motivo) en la tabla `moderation.Reports`.
 
-### 2. Configurar variables del backend
+---
 
-Copia el archivo:
+## ⚙️ Requisitos Previos
 
-```bash
-cp backend/.env.example backend/.env
-```
+Antes de ejecutar el proyecto, asegúrate de tener instalado:
+- **Python 3.12+**
+- **Microsoft SQL Server** (Local o en la nube)
+- **ODBC Driver 17 for SQL Server** instalado en el sistema operativo Windows.
+- Una cuenta de **AWS** con un bucket S3 y credenciales de acceso.
 
-En Windows PowerShell:
+---
 
-```powershell
-Copy-Item backend/.env.example backend/.env
-```
+## 🚀 Guía de Ejecución Paso a Paso
 
-Edita `backend/.env` y coloca tu bucket real de S3 en `AWS_MEDIA_BUCKET`.
+### 1. Preparación de la Base de Datos
+1. Abre SQL Server Management Studio (SSMS) o Azure Data Studio.
+2. Crea una nueva base de datos para el proyecto.
+3. Ejecuta el script SQL principal que incluye la creación de los esquemas (`sec`, `content`, `moderation`, `audit`), las tablas, los Triggers de trazabilidad y los Stored Procedures.
 
-### 3. Ejecutar backend
+### 2. Configuración y Ejecución del Backend (API)
+Abre una terminal y colócate en la carpeta raíz del proyecto descargado.
 
-Linux o macOS:
+1. Navega a la carpeta del backend:
+   ```bash
+   cd backend
+   ```
+2. Crea un entorno virtual de Python:
+   ```bash
+   python -m venv .venv
+   ```
+3. Activa el entorno virtual:
+   - **En Windows:** `.\.venv\Scripts\activate`
+   - **En Mac/Linux:** `source .venv/bin/activate`
+4. Instala las dependencias necesarias:
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. Configura el archivo de entorno. Crea un archivo `.env` en la carpeta `backend` con la siguiente estructura:
+   ```env
+   # Base de Datos
+   DB_SERVER=localhost\SQLEXPRESS
+   DB_DATABASE=TuBaseDeDatos
+   DB_USER=sa
+   DB_PASSWORD=TuPassword
+   DB_DRIVER=ODBC Driver 17 for SQL Server
 
-```bash
-./scripts/run_backend_local.sh
-```
+   # AWS S3
+   AWS_ACCESS_KEY_ID=tu_access_key
+   AWS_SECRET_ACCESS_KEY=tu_secret_key
+   AWS_REGION=us-east-1
+   S3_BUCKET_NAME=tu-bucket
 
-Windows PowerShell:
+   # Seguridad
+   SECRET_KEY=tu_clave_super_secreta_jwt
+   ```
+6. Inicia el servidor de FastAPI:
+   ```bash
+   uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+   ```
+   > El backend estará corriendo en `http://127.0.0.1:8000`. Puedes ver y probar todos los endpoints accediendo a la documentación interactiva en **`http://127.0.0.1:8000/docs`**.
 
-```powershell
-.\scripts\run_backend_local.ps1
-```
+### 3. Ejecución del Frontend (Aplicación Web)
+El frontend no necesita compilación ya que es Vanilla JS.
 
-La API se abre en:
+1. Abre otra terminal y navega a la carpeta del frontend:
+   ```bash
+   cd front
+   ```
+2. Si usas **VS Code**, la forma recomendada es hacer clic derecho en el archivo `html/index.html` y seleccionar **"Open with Live Server"**.
+3. **Alternativa con Python:** Si no usas Live Server, puedes levantar un servidor web simple ejecutando:
+   ```bash
+   python -m http.server 5500
+   ```
+   > Luego, abre tu navegador y visita: `http://127.0.0.1:5500/html/index.html`
 
-```txt
-http://127.0.0.1:8000/docs
-```
+---
 
-### 4. Ejecutar frontend
-
-Abre la carpeta `front` con Live Server en VS Code o ejecuta:
-
-```bash
-cd front
-python -m http.server 5500
-```
-
-Luego abre:
-
-```txt
-http://127.0.0.1:5500/html/index.html
-```
-
-## Terraform AWS
-
-### 1. Crear llave SSH
-
-Windows PowerShell:
-
-```powershell
-ssh-keygen -t ed25519 -f "$env:USERPROFILE\.ssh\pincloud_ec2"
-```
-
-### 2. Obtener IP pública
-
-```powershell
-(Invoke-WebRequest -UseBasicParsing https://checkip.amazonaws.com).Content.Trim()
-```
-
-### 3. Crear variables Terraform
-
-```bash
-cp infra/terraform.tfvars.example infra/terraform.tfvars
-```
-
-Edita `infra/terraform.tfvars` con tu IP y ruta de llave pública.
-
-### 4. Levantar infraestructura
-
-```bash
-cd infra
-terraform init
-terraform fmt
-terraform validate
-terraform plan
-terraform apply
-```
-
-Terraform crea:
-
-```txt
-Bucket privado para aplicación frontend
-Bucket privado para multimedia
-CloudFront para servir la aplicación
-IAM Role para EC2
-Política IAM de mínimo privilegio sobre el bucket multimedia
-EC2 para la API FastAPI
-Security Group para HTTP, SSH y FastAPI controlado
-```
-
-### 5. Subir frontend al bucket principal
-
-Desde la raíz del proyecto:
-
-```bash
-./scripts/deploy_front.sh nombre-del-bucket-app
-```
-
-El nombre del bucket sale en `terraform output app_bucket_name`.
-
-## Flujo de la aplicación
-
-```txt
-Usuario abre el frontend desde CloudFront o local
-El frontend consume la API FastAPI
-FastAPI se conecta a SQL Server
-FastAPI genera URLs prefirmadas para S3
-El navegador sube imágenes o videos al bucket multimedia
-SQL Server guarda metadatos de publicaciones
-El feed muestra publicaciones aprobadas
-```
-
-## Buenas prácticas aplicadas
-
-```txt
-Frontend separado por html, estilos y javascript
-Variables globales de CSS
-Backend organizado por modelos, rutas, esquemas, seguridad y servicios
-Contraseñas con hash bcrypt
-Autenticación con JWT
-CORS controlado por variables de entorno
-S3 privado
-CloudFront para bucket de aplicación
-IAM Role para EC2 sin credenciales quemadas en código
-Política IAM de mínimo privilegio
-Terraform para infraestructura reproducible
-SQL Server separado del almacenamiento multimedia
-```
-posdata:solo es la version 1, aun falta definir bien la base de datos y los script de terraform para aws
+## 📝 Pruebas Básicas del Sistema
+1. **Registro:** Ingresa al frontend y regístrate. El primer usuario registrado recibe automáticamente el rol de Administrador.
+2. **Subida de Archivos:** Sube una imagen o video. Verifica en tu base de datos que la fila en `content.Pins` tiene estado `PENDING_REVIEW`.
+3. **Moderación:** Ingresa al panel de Swagger (`/docs`) usando tu token y utiliza el endpoint `PATCH /api/pins/{pin_id}/status` con `APPROVED` para que la imagen aparezca en el Feed.
