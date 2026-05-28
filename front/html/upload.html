@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pinterest | Crear publicación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../estilos/variables.css">
+  <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/upload.css">
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">P</span>
+      <span>Pinterest</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-link">Explorar</a>
+      <a href="usuario.html" class="nav-link">Mi perfil</a>
+      <a href="upload.html" class="nav-link active">Crear</a>
+    </nav>
+    <div class="session-actions" id="sessionActions"></div>
+  </header>
+
+  <main class="page-shell upload-shell">
+    <section class="upload-card" aria-labelledby="uploadTitle">
+      <div>
+        <p class="eyebrow">Nueva publicación</p>
+        <h1 id="uploadTitle">Subir contenido multimedia</h1>
+        <p>El archivo se enviará al bucket multimedia de AWS S3 y los metadatos quedarán registrados en SQL Server.</p>
+      </div>
+      <form id="uploadForm" class="upload-form">
+        <label for="title">Título</label>
+        <input id="title" type="text" minlength="3" maxlength="150" required>
+        <label for="description">Descripción</label>
+        <textarea id="description" maxlength="500" rows="4" required></textarea>
+        <label for="categoryId">Categoría</label>
+        <select id="categoryId" required></select>
+        <label for="tags">Etiquetas separadas por coma</label>
+        <input id="tags" type="text" maxlength="300" placeholder="arte, ideas, diseño">
+        <label for="mediaFile">Archivo</label>
+        <input id="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,video/mp4" required>
+        <button class="btn primary full" type="submit">Publicar</button>
+      </form>
+      <p class="form-message" id="formMessage"></p>
+    </section>
+    <aside class="upload-rules">
+      <h2>Reglas de publicación</h2>
+      <ul>
+        <li>Solo se permiten imágenes y videos válidos.</li>
+        <li>El contenido puede quedar pendiente de revisión.</li>
+        <li>No se permite contenido ofensivo, privado o engañoso.</li>
+        <li>Los archivos se almacenan en S3 con acceso controlado.</li>
+      </ul>
+    </aside>
+  </main>
+
+  <script src="../javascript/config.js"></script>
+  <script src="../javascript/api.js"></script>
+  <script src="../javascript/session.js"></script>
+  <script src="../javascript/upload.js"></script>
+</body>
+
+</html>
