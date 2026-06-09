@@ -1,67 +1,178 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  PinCloudSession.requireAuth();
-
-  const form = document.getElementById("uploadForm");
-  const categorySelect = document.getElementById("categoryId");
-  const formMessage = document.getElementById("formMessage");
-
-  const setMessage = (message, type = "") => {
-    formMessage.textContent = message;
-    formMessage.className = `form-message ${type}`.trim();
-  };
-
-  try {
-    const categories = await PinCloudAPI.get("/categories");
-    categorySelect.innerHTML = categories.map(category => `<option value="${category.id}">${category.name}</option>`).join("");
-  } catch (error) {
-    setMessage(error.message, "error");
+/**
+ * upload.js - Lógica para crear nodos
+ */
+document.addEventListener("DOMContentLoaded", () => {
+  if (!NexusSession.isAuthenticated()) {
+    window.location.href = "login.html";
+    return;
   }
 
-  form.addEventListener("submit", async event => {
-    event.preventDefault();
-    setMessage("Preparando archivo...");
+  const dropArea = document.getElementById("dropArea");
+  const mediaFile = document.getElementById("mediaFile");
+  const previewContainer = document.getElementById("mediaPreviewContainer");
+  const imagePreview = document.getElementById("imagePreview");
+  const videoPreview = document.getElementById("videoPreview");
+  const clearMediaBtn = document.getElementById("clearMediaBtn");
+  const uploadForm = document.getElementById("uploadForm");
+  const categorySelect = document.getElementById("category");
+  const boardSelect = document.getElementById("boardId");
+  const publishBtn = document.getElementById("publishBtn");
+  
+  let selectedFile = null;
 
-    const file = document.getElementById("mediaFile").files[0];
-
-    if (!file) {
-      setMessage("Selecciona un archivo", "error");
-      return;
+  // Cargar categorías
+  const loadCategories = async () => {
+    try {
+      const categories = await NexusAPI.get("/categories");
+      categories.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat.id;
+        option.textContent = cat.name;
+        categorySelect.appendChild(option);
+      });
+    } catch (error) {
+      NexusUI.showToast("No se pudieron cargar las áreas temáticas", "error");
     }
+  };
+
+  // Cargar constelaciones
+  const loadMyConstellationsForUpload = async () => {
+    try {
+        const items = await NexusAPI.get("/constellations/me");
+
+        boardSelect.innerHTML = `<option value="">Sin constelación</option>`;
+
+        items.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.BoardId;
+            option.textContent = item.Name;
+            boardSelect.appendChild(option);
+        });
+    } catch (error) {
+        boardSelect.innerHTML = `<option value="">Sin constelación</option>`;
+    }
+  };
+
+  // Drag and Drop Logic
+  const handleFiles = (files) => {
+    if (files.length === 0) return;
+    const file = files[0];
 
     if (file.size > 15 * 1024 * 1024) {
-      setMessage("El archivo supera el límite de 15 MB", "error");
+      NexusUI.showToast("El archivo excede el límite de 15MB", "error");
       return;
     }
 
+    selectedFile = file;
+    dropArea.style.display = "none";
+    previewContainer.style.display = "block";
+
+    const fileUrl = URL.createObjectURL(file);
+    if (file.type.startsWith("video/")) {
+      imagePreview.style.display = "none";
+      videoPreview.style.display = "block";
+      videoPreview.src = fileUrl;
+    } else {
+      videoPreview.style.display = "none";
+      imagePreview.style.display = "block";
+      imagePreview.src = fileUrl;
+    }
+  };
+
+  dropArea.addEventListener("click", () => mediaFile.click());
+  
+  mediaFile.addEventListener("change", (e) => handleFiles(e.target.files));
+
+  dropArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropArea.classList.add("dragover");
+  });
+
+  dropArea.addEventListener("dragleave", () => {
+    dropArea.classList.remove("dragover");
+  });
+
+  dropArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropArea.classList.remove("dragover");
+    handleFiles(e.dataTransfer.files);
+  });
+
+  clearMediaBtn.addEventListener("click", () => {
+    selectedFile = null;
+    mediaFile.value = "";
+    previewContainer.style.display = "none";
+    dropArea.style.display = "flex";
+    imagePreview.src = "";
+    videoPreview.src = "";
+  });
+
+  document.getElementById("cancelBtn").addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
+
+  uploadForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!selectedFile) {
+      NexusUI.showToast("Debes seleccionar un archivo multimedia", "error");
+      return;
+    }
+
+    publishBtn.disabled = true;
+    publishBtn.textContent = "Subiendo archivo...";
+
     try {
-      const uploadData = await PinCloudAPI.post("/uploads/presigned-url", {
-        filename: file.name,
-        content_type: file.type
+      const fileName = `${Date.now()}-${selectedFile.name.replace(/\s+/g, '-')}`;
+      const fileType = selectedFile.type;
+
+      // 1. Obtener URL presignada
+      const presigned = await NexusAPI.post("/uploads/presigned-url", {
+        file_name: fileName,
+        file_type: fileType
       });
 
-      setMessage("Subiendo archivo a S3...");
-      const uploadResponse = await PinCloudAPI.putFile(uploadData.upload_url, file, file.type);
-
-      if (!uploadResponse.ok) {
-        throw new Error("No se pudo subir el archivo a S3");
-      }
-
-      setMessage("Guardando publicación...");
-
-      await PinCloudAPI.post("/posts", {
-        title: document.getElementById("title").value.trim(),
-        description: document.getElementById("description").value.trim(),
-        category_id: Number(categorySelect.value),
-        tags: document.getElementById("tags").value.trim(),
-        s3_key: uploadData.s3_key,
-        media_type: file.type
+      // 2. Subir directamente a S3 (o bucket local) usando PUT normal
+      await fetch(presigned.upload_url, {
+        method: "PUT",
+        headers: { "Content-Type": fileType },
+        body: selectedFile
       });
 
-      setMessage("Publicación creada correctamente. Puede quedar pendiente de revisión.", "success");
-      form.reset();
-      setTimeout(() => window.location.href = "usuario.html", 900);
+      publishBtn.textContent = "Guardando nodo...";
+
+      // 3. Registrar Nodo en BD
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const categoryId = Number(categorySelect.value);
+      const tags = document.getElementById("tags").value.trim();
+      const isAiGenerated = document.getElementById("isAiGenerated").checked;
+      const isSensitive = document.getElementById("isSensitive").checked;
+      const boardId = boardSelect.value ? Number(boardSelect.value) : null;
+
+      await NexusAPI.post("/pins", {
+        title: title,
+        description: description,
+        category_id: categoryId,
+        board_id: boardId,
+        tags: tags,
+        s3_key: presigned.s3_key,
+        media_type: fileType,
+        is_ai_generated: isAiGenerated,
+        is_sensitive: isSensitive
+      });
+
+      NexusUI.showToast("Tu nodo ha sido enviado a revisión", "success");
+      setTimeout(() => {
+        window.location.href = "usuario.html"; // Redirigir a usuario para que vea "Pendientes"
+      }, 1500);
+
     } catch (error) {
-      setMessage(error.message, "error");
+      publishBtn.disabled = false;
+      publishBtn.textContent = "Publicar nodo";
+      NexusUI.showToast(error.message, "error");
     }
   });
+
+  loadCategories();
+  loadMyConstellationsForUpload();
 });

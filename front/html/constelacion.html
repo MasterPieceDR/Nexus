@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Galaxia</title>
+    <link rel="stylesheet" href="../estilos/variables.css">
+    <link rel="stylesheet" href="../estilos/base.css">
+    <link rel="stylesheet" href="../estilos/galaxia.css">
+</head>
+<body>
+    <header class="app-header">
+        <a href="index.html" class="brand">
+            <span class="brand-icon"></span>
+            <span>Nexus</span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="index.html">Explorar</a>
+            <a href="constelaciones.html" class="active">Constelaciones</a>
+            <a href="upload.html">Crear</a>
+        </nav>
+    </header>
+
+    <main class="galaxy-page">
+        <section class="galaxy-header">
+            <span class="galaxy-kicker">Constelación Nexus</span>
+            <h1 id="galaxyTitle">Cargando galaxia...</h1>
+            <p id="galaxyDescription">Los nodos aparecerán como estrellas conectadas.</p>
+        </section>
+
+        <section class="galaxy-stage" id="galaxyStage">
+            <div class="galaxy-core"></div>
+            <svg class="galaxy-orbits" viewBox="0 0 1000 620" preserveAspectRatio="none">
+                <ellipse cx="500" cy="310" rx="390" ry="180"></ellipse>
+                <ellipse cx="500" cy="310" rx="300" ry="115"></ellipse>
+                <ellipse cx="500" cy="310" rx="470" ry="245"></ellipse>
+            </svg>
+            <div id="starsLayer" class="stars-layer"></div>
+        </section>
+
+        <section class="node-preview" id="nodePreview">
+            <img id="previewImage" src="" alt="">
+            <div>
+                <h2 id="previewTitle">Selecciona una estrella</h2>
+                <p id="previewText">Haz clic en cualquier nodo de la galaxia para abrir su publicación.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="../javascript/config.js"></script>
+    <script src="../javascript/constelacion.js"></script>
+</body>
+</html>

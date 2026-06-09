@@ -1,69 +1,142 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pinterest | Crear publicación</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../estilos/variables.css">
+  <title>Nexus - Crear Nodo</title>
   <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/layout.css">
+  <link rel="stylesheet" href="../estilos/components.css">
   <link rel="stylesheet" href="../estilos/upload.css">
 </head>
-
 <body>
-  <header class="topbar">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">P</span>
-      <span>Pinterest</span>
-    </a>
-    <nav class="main-nav">
-      <a href="index.html" class="nav-link">Explorar</a>
-      <a href="usuario.html" class="nav-link">Mi perfil</a>
-      <a href="upload.html" class="nav-link active">Crear</a>
-    </nav>
-    <div class="session-actions" id="sessionActions"></div>
+
+  <!-- Header -->
+  <header class="main-header">
+    <div class="header-left">
+      <a href="index.html" class="header-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+          <line x1="12" y1="22" x2="12" y2="15.5"></line>
+          <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+          <polyline points="2 15.5 12 8.5 22 15.5"></polyline>
+          <line x1="12" y1="2" x2="12" y2="8.5"></line>
+        </svg>
+        Nexus
+      </a>
+      <nav class="header-nav">
+        <a href="index.html" class="nav-link">Explorar</a>
+        <a href="constelaciones.html" class="nav-link" id="navConstelaciones">Constelaciones</a>
+        <a href="upload.html" class="nav-link active" id="navCrear">Crear</a>
+      </nav>
+    </div>
+
+    <div class="header-right">
+      <div id="userMenu" class="user-menu" style="display: none;">
+        <div class="user-avatar" id="headerAvatar"></div>
+        <div class="dropdown-menu">
+          <a href="usuario.html" class="dropdown-item">Mi perfil</a>
+          <a href="biblioteca.html" class="dropdown-item">Mi biblioteca</a>
+          <a href="moderacion.html" class="dropdown-item" id="navModeracion" style="display: none;">Revisi&oacute;n &Eacute;tica</a>
+          <a href="settings.html" class="dropdown-item">Configuraci&oacute;n</a>
+          <a href="#" class="dropdown-item text-danger" id="logoutBtn">Cerrar sesi&oacute;n</a>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <main class="page-shell upload-shell">
-    <section class="upload-card" aria-labelledby="uploadTitle">
-      <div>
-        <p class="eyebrow">Nueva publicación</p>
-        <h1 id="uploadTitle">Subir contenido multimedia</h1>
-        <p>El archivo se enviará al bucket multimedia de AWS S3 y los metadatos quedarán registrados en SQL Server.</p>
+  <main class="main-content container upload-container">
+    <div class="upload-header">
+      <h1 class="mb-2">Crear nuevo nodo</h1>
+      <p class="text-muted">A&ntilde;ade un recurso visual a tu colecci&oacute;n o comp&aacute;rtelo con el mundo.</p>
+    </div>
+
+    <div class="upload-grid">
+      <!-- Secci&oacute;n Izquierda: Media -->
+      <div class="upload-media-section">
+        <div class="drag-drop-area" id="dropArea">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mb-3 text-muted">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <p class="fw-semibold">Elige un archivo o arr&aacute;stralo y su&eacute;ltalo aqu&iacute;</p>
+          <p class="text-sm text-muted mt-1">Recomendamos archivos JPG, PNG, WEBP o MP4 menores a 15MB</p>
+          <input type="file" id="mediaFile" accept="image/*,video/mp4" hidden>
+        </div>
+        <div id="mediaPreviewContainer" class="media-preview-container" style="display: none;">
+          <button type="button" class="btn-clear" id="clearMediaBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+          <img id="imagePreview" class="media-preview" style="display: none;">
+          <video id="videoPreview" class="media-preview" controls style="display: none;"></video>
+        </div>
       </div>
-      <form id="uploadForm" class="upload-form">
-        <label for="title">Título</label>
-        <input id="title" type="text" minlength="3" maxlength="150" required>
-        <label for="description">Descripción</label>
-        <textarea id="description" maxlength="500" rows="4" required></textarea>
-        <label for="categoryId">Categoría</label>
-        <select id="categoryId" required></select>
-        <label for="tags">Etiquetas separadas por coma</label>
-        <input id="tags" type="text" maxlength="300" placeholder="arte, ideas, diseño">
-        <label for="mediaFile">Archivo</label>
-        <input id="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,video/mp4" required>
-        <button class="btn primary full" type="submit">Publicar</button>
-      </form>
-      <p class="form-message" id="formMessage"></p>
-    </section>
-    <aside class="upload-rules">
-      <h2>Reglas de publicación</h2>
-      <ul>
-        <li>Solo se permiten imágenes y videos válidos.</li>
-        <li>El contenido puede quedar pendiente de revisión.</li>
-        <li>No se permite contenido ofensivo, privado o engañoso.</li>
-        <li>Los archivos se almacenan en S3 con acceso controlado.</li>
-      </ul>
-    </aside>
+
+      <!-- Secci&oacute;n Derecha: Formulario -->
+      <div class="upload-form-section">
+        <form id="uploadForm">
+          <div class="form-group">
+            <label for="title" class="form-label">T&iacute;tulo</label>
+            <input type="text" id="title" class="form-control" required placeholder="A&ntilde;ade un t&iacute;tulo que describa tu nodo">
+          </div>
+          
+          <div class="form-group">
+            <label for="description" class="form-label">Descripci&oacute;n</label>
+            <textarea id="description" class="form-control" placeholder="Cuenta m&aacute;s sobre este nodo..."></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="category" class="form-label">&Aacute;rea tem&aacute;tica</label>
+            <select id="category" class="form-control" required>
+              <option value="" disabled selected>Selecciona un &aacute;rea</option>
+              <!-- Din&aacute;mico -->
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="boardId" class="form-label">Constelación</label>
+            <select id="boardId" name="boardId" class="form-control">
+              <option value="">Sin constelación</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="tags" class="form-label">Conexiones (Tags)</label>
+            <input type="text" id="tags" class="form-control" placeholder="Ej: aws, nube, servidor">
+          </div>
+
+          <div class="ethics-box mt-4 mb-4">
+            <h4 class="fw-semibold mb-3">Clasificaci&oacute;n &eacute;tica</h4>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="isAiGenerated">
+              <label for="isAiGenerated">Este contenido fue generado o apoyado con IA</label>
+            </div>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="isSensitive">
+              <label for="isSensitive">Este contenido puede ser sensible</label>
+            </div>
+            <div class="alert-box mt-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>Tu nodo pasar&aacute; por revisi&oacute;n antes de aparecer p&uacute;blicamente en Explorar.</span>
+            </div>
+          </div>
+          
+          <div class="form-actions mt-4">
+            <button type="button" class="btn btn-outline" id="cancelBtn">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="publishBtn">Publicar nodo</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </main>
 
+  <!-- Scripts -->
   <script src="../javascript/config.js"></script>
   <script src="../javascript/api.js"></script>
   <script src="../javascript/session.js"></script>
+  <script src="../javascript/ui.js"></script>
+  <script src="../javascript/modal.js"></script>
   <script src="../javascript/upload.js"></script>
 </body>
-
 </html>

@@ -1,139 +1,150 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  const feedGrid = document.getElementById("feedGrid");
-  const statusMessage = document.getElementById("statusMessage");
-  const searchForm = document.getElementById("searchForm");
+/**
+ * index.js - Controlador principal de Explorar (Feed)
+ */
+document.addEventListener("DOMContentLoaded", () => {
+  const feedContainer = document.getElementById("feedContainer");
+  const categoriesBar = document.getElementById("categoriesBar");
   const searchInput = document.getElementById("searchInput");
-  const categoryList = document.getElementById("categoryList");
-  const feedSummary = document.getElementById("feedSummary");
-  const clearFilters = document.getElementById("clearFilters");
+  const loadingIndicator = document.getElementById("loadingIndicator");
+  const emptyState = document.getElementById("emptyState");
   
-  let activeCategory = null;
-  
-  const landingShell = document.getElementById("landingShell");
-  const feedShell = document.getElementById("feedShell");
-  const publicNav = document.getElementById("publicNav");
-  const privateNav = document.getElementById("privateNav");
-
-  const isAuth = PinCloudSession.isAuthenticated();
-  
-  if (isAuth) {
-    if (landingShell) landingShell.style.display = "none";
-    if (feedShell) feedShell.style.display = "block";
-    if (publicNav) publicNav.style.display = "none";
-    if (privateNav) privateNav.style.display = "flex";
-    if (searchForm) searchForm.style.display = "flex";
-  } else {
-    if (landingShell) landingShell.style.display = "block";
-    if (feedShell) feedShell.style.display = "none";
-    if (publicNav) publicNav.style.display = "flex";
-    if (privateNav) privateNav.style.display = "none";
-    if (searchForm) searchForm.style.display = "none";
+  // Redirigir a landing page si no hay sesión iniciada
+  if (!NexusSession.isAuthenticated()) {
+    window.location.href = "landing.html";
+    return;
   }
-
-  const mockExploreBtn = document.getElementById("mockExploreBtn");
-  if (mockExploreBtn) {
-    mockExploreBtn.addEventListener("click", () => {
-      if (landingShell) landingShell.style.display = "none";
-      if (feedShell) feedShell.style.display = "block";
-      if (publicNav) publicNav.style.display = "none";
-      if (privateNav) privateNav.style.display = "flex";
-      if (searchForm) searchForm.style.display = "flex";
-      loadPosts();
-    });
-  }
-
-  const loadScript = src => new Promise(resolve => {
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = resolve;
-    document.body.appendChild(script);
-  });
-
-  await loadScript("../javascript/cards.js");
-
-  const renderCategories = categories => {
-    if (!categoryList) return;
-    categoryList.replaceChildren();
-    categories.forEach(category => {
-      const button = document.createElement("button");
-      button.className = "category-chip";
-      button.type = "button";
-      button.textContent = category.name;
-      button.addEventListener("click", () => {
-        activeCategory = category.id;
-        document.querySelectorAll(".category-chip").forEach(item => item.classList.remove("active"));
-        button.classList.add("active");
-        loadPosts({ category_id: category.id });
+  
+  let currentCategory = "";
+  let currentSearch = "";
+  
+  const loadCategories = async () => {
+    try {
+      const categories = await NexusAPI.get("/categories");
+      categories.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "category-chip";
+        btn.textContent = cat.name;
+        btn.dataset.id = cat.id;
+        
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".category-chip").forEach(c => c.classList.remove("active"));
+          btn.classList.add("active");
+          currentCategory = cat.id;
+          loadFeed();
+        });
+        
+        categoriesBar.appendChild(btn);
       });
-      categoryList.appendChild(button);
-    });
+      
+      // Manejar el botón "Todas"
+      categoriesBar.firstElementChild.addEventListener("click", (e) => {
+        document.querySelectorAll(".category-chip").forEach(c => c.classList.remove("active"));
+        e.target.classList.add("active");
+        currentCategory = "";
+        loadFeed();
+      });
+      
+    } catch (error) {
+      console.error("Error al cargar áreas:", error);
+    }
   };
 
-  const renderPosts = posts => {
-    if (!feedGrid) return;
-    feedGrid.replaceChildren();
+  const createNodeCard = (node) => {
+    const card = document.createElement("div");
+    card.className = "node-card masonry-item";
+    
+    // Si es MP4, mostramos video, sino imagen
+    const isVideo = node.MediaKind === 'VIDEO';
+    const mediaHtml = isVideo 
+      ? `<video src="${node.MediaUrl}" class="node-image" autoplay loop muted playsinline></video>`
+      : `<img src="${node.MediaUrl}" alt="${node.Title}" class="node-image" loading="lazy">`;
 
-    if (!posts.length) {
-      statusMessage.textContent = "No existen publicaciones para mostrar.";
-      const emptyState = document.createElement("div");
-      emptyState.className = "empty-state";
-      emptyState.textContent = "No hay publicaciones.";
-      feedGrid.appendChild(emptyState);
+    card.innerHTML = `
+      ${mediaHtml}
+      <div class="node-overlay">
+        <div class="node-overlay-top">
+          <button class="node-btn node-btn-save" data-id="${node.PinId}">Guardar</button>
+        </div>
+      </div>
+      <div class="node-info">
+        <h3 class="node-title">${node.Title}</h3>
+        <div class="node-author">
+          <div class="node-author-img"></div>
+          <span>${node.DisplayName}</span>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener("click", (e) => {
+      // Evitar que el click en "Guardar" abra el detalle
+      if(e.target.classList.contains("node-btn-save")) {
+        handleSave(node.PinId, e.target);
+        return;
+      }
+      window.location.href = `detalle.html?id=${node.PinId}`;
+    });
+
+    return card;
+  };
+
+  const loadFeed = async () => {
+    feedContainer.innerHTML = "";
+    loadingIndicator.style.display = "block";
+    emptyState.style.display = "none";
+    
+    try {
+      let data = [];
+      if (currentSearch || currentCategory) {
+        let url = `/pins/search?page=1&size=30`;
+        if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
+        if (currentCategory) url += `&category_id=${currentCategory}`;
+        data = await NexusAPI.get(url);
+      } else {
+        data = await NexusAPI.get("/pins/feed?page=1&size=30");
+      }
+      
+      loadingIndicator.style.display = "none";
+      
+      if (data.length === 0) {
+        emptyState.style.display = "block";
+        return;
+      }
+      
+      data.forEach(node => {
+        feedContainer.appendChild(createNodeCard(node));
+      });
+      
+    } catch (error) {
+      loadingIndicator.style.display = "none";
+      NexusUI.showToast("Error al cargar los nodos visuales", "error");
+    }
+  };
+
+  const handleSave = async (pinId, button) => {
+    if (!NexusSession.isAuthenticated()) {
+      window.location.href = "login.html";
       return;
     }
-
-    statusMessage.textContent = "";
-    posts.forEach(post => feedGrid.appendChild(createPinCard(post)));
-  };
-
-  const loadPosts = async (params = {}) => {
-    if (!feedGrid) return;
-    statusMessage.textContent = "Cargando publicaciones...";
-    const query = new URLSearchParams(params).toString();
-
+    
     try {
-      const posts = await PinCloudAPI.get(`/posts${query ? `?${query}` : ""}`);
-      if (feedSummary) {
-        feedSummary.textContent = params.search ? `Resultados para: ${params.search}` : "Contenido aprobado para la comunidad.";
-      }
-      renderPosts(posts);
+      await NexusAPI.post(`/pins/${pinId}/save`);
+      button.textContent = "Guardado";
+      button.style.backgroundColor = "var(--color-text)";
+      NexusUI.showToast("Nodo guardado en tu biblioteca", "success");
     } catch (error) {
-      statusMessage.textContent = error.message;
-      statusMessage.classList.add("error");
+      NexusUI.showToast(error.message || "No se pudo guardar", "error");
     }
   };
 
-  try {
-    const categories = await PinCloudAPI.get("/categories");
-    renderCategories(categories);
-  } catch (error) {
-    if (categoryList) {
-      const errorBadge = document.createElement("span");
-      errorBadge.className = "badge";
-      errorBadge.textContent = "No se pudieron cargar categorías";
-      categoryList.replaceChildren(errorBadge);
+  // Buscador
+  searchInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      currentSearch = searchInput.value.trim();
+      loadFeed();
     }
-  }
+  });
 
-  if (searchForm) {
-    searchForm.addEventListener("submit", event => {
-      event.preventDefault();
-      activeCategory = null;
-      const search = searchInput.value.trim();
-      loadPosts(search ? { search } : {});
-    });
-  }
-  
-  if (clearFilters) {
-    clearFilters.addEventListener("click", () => {
-      activeCategory = null;
-      if (searchInput) searchInput.value = "";
-      document.querySelectorAll(".category-chip").forEach(item => item.classList.remove("active"));
-      loadPosts();
-    });
-  }
-
-  if (isAuth) {
-    loadPosts();
-  }
+  // Init
+  loadCategories();
+  loadFeed();
 });

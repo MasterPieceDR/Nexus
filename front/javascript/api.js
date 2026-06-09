@@ -1,7 +1,7 @@
-const PinCloudAPI = (() => {
-  const baseUrl = window.PINCLOUD_CONFIG.API_URL;
+const NexusAPI = (() => {
+  const baseUrl = window.NEXUS_CONFIG.API_BASE_URL;
 
-  const getToken = () => localStorage.getItem("pincloud_token");
+  const getToken = () => localStorage.getItem("nexus_token");
 
   const request = async (path, options = {}) => {
     const headers = new Headers(options.headers || {});
@@ -24,6 +24,12 @@ const PinCloudAPI = (() => {
     const data = contentType.includes("application/json") ? await response.json() : await response.text();
 
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem("nexus_token");
+        localStorage.removeItem("nexus_user");
+        window.location.href = "login.html";
+        return;
+      }
       const message = data.detail || data.message || "No se pudo completar la solicitud";
       throw new Error(message);
     }

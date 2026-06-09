@@ -1,0 +1,226 @@
+/* ===============================
+   LAYOUT GENERAL
+=============================== */
+
+/* Header */
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.header-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-logo span {
+  color: var(--color-primary);
+}
+
+.header-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-link {
+  font-weight: 600;
+  color: var(--color-text);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+  background-color: var(--color-bg);
+  color: var(--color-primary);
+}
+
+/* Buscador Header */
+.header-search {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 24px;
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 16px 12px 48px;
+  background-color: var(--color-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.search-box input:focus {
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+  outline: none;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+}
+
+/* Header Right */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-menu {
+  position: relative;
+  cursor: pointer;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  min-width: 200px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dropdown-menu.show {
+  display: flex;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  display: block;
+  font-weight: 500;
+  border-bottom: 1px solid var(--color-bg);
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-bg);
+  color: var(--color-primary);
+}
+
+.dropdown-item.text-danger {
+  color: var(--color-danger);
+}
+
+/* Layout Principal */
+.main-content {
+  padding-top: calc(var(--header-height) + 24px);
+  min-height: calc(100vh - var(--header-height));
+  padding-bottom: 40px;
+}
+
+/* Masonry Grid */
+.masonry-grid {
+  columns: 5 250px;
+  column-gap: 20px;
+  width: 100%;
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 20px;
+}
+
+/* Barra de categorías */
+.categories-bar {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 0 24px 0;
+  scrollbar-width: none;
+}
+
+.categories-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.category-chip {
+  padding: 8px 16px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-chip:hover, .category-chip.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Responsive Layout */
+@media (max-width: 1024px) {
+  .masonry-grid { columns: 4 220px; }
+  .header-search { margin: 0 16px; }
+}
+
+@media (max-width: 768px) {
+  .masonry-grid { columns: 3 200px; }
+  .nav-link { display: none; }
+  .header-left { gap: 12px; }
+}
+
+@media (max-width: 480px) {
+  .masonry-grid { columns: 2 150px; }
+  .header-search { display: none; }
+  .main-header { padding: 0 16px; }
+}

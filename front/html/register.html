@@ -1,51 +1,100 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pinterest | Registro</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../estilos/variables.css">
+  <title>Nexus - Registro</title>
   <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/components.css">
   <link rel="stylesheet" href="../estilos/auth.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
+<body class="auth-page">
 
-<body class="auth-body">
-  <main class="auth-layout">
-    <section class="auth-card" aria-labelledby="registerTitle">
-      <a class="brand auth-brand" href="index.html">
-        <span class="brand-mark">P</span>
-        <span> Pinterest</span>
+  <div class="auth-container">
+    <div class="auth-logo">
+      <a href="landing.html" style="text-decoration: none;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+          <line x1="12" y1="22" x2="12" y2="15.5"></line>
+          <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+          <polyline points="2 15.5 12 8.5 22 15.5"></polyline>
+          <line x1="12" y1="2" x2="12" y2="8.5"></line>
+        </svg>
       </a>
-      <h1 id="registerTitle">Crear cuenta</h1>
-      <p>Regístrate para subir contenido multimedia y administrar tus publicaciones.</p>
-      <form id="registerForm" class="auth-form">
-        <label for="fullName">Nombre completo</label>
-        <input id="fullName" name="fullName" type="text" minlength="3" maxlength="100" required>
-        <label for="email">Correo electrónico</label>
-        <input id="email" name="email" type="email" maxlength="150" required>
-        <label for="password">Contraseña</label>
-        <input id="password" name="password" type="password" minlength="8" required>
-        <label class="terms-line">
-          <input id="acceptedTerms" type="checkbox" required>
-          <span>Acepto las normas de uso y publicación responsable.</span>
-        </label>
-        <button class="btn primary full" type="submit">Crear cuenta</button>
-      </form>
-      <p class="form-message" id="formMessage"></p>
-      <p class="auth-switch">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
-    </section>
-    <section class="auth-panel">
-      <h2>Publica con control y seguridad</h2>
-    </section>
-  </main>
-  <script src="../javascript/config.js"></script>
-  <script src="../javascript/api.js"></script>
-  <script src="../javascript/session.js"></script>
-  <script src="../javascript/auth.js"></script>
-</body>
+    </div>
+    
+    <h1 class="auth-title">Crea tu cuenta en Nexus</h1>
+    <p class="auth-subtitle">Únete a la plataforma visual de descubrimiento y conexión de ideas.</p>
 
+    <form id="registerForm" class="auth-form">
+      <div class="form-group" style="display: flex; gap: 10px;">
+        <div style="flex: 1;">
+          <label for="firstName" class="form-label">Tus dos nombres</label>
+          <input type="text" id="firstName" class="form-control" required placeholder="Ej: Juan Carlos">
+        </div>
+        <div style="flex: 1;">
+          <label for="lastName" class="form-label">Tus dos apellidos</label>
+          <input type="text" id="lastName" class="form-control" required placeholder="Ej: Pérez Gómez">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input type="email" id="email" class="form-control" required placeholder="correo@ejemplo.com">
+      </div>
+      
+      <div class="form-group">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" id="password" class="form-control" required minlength="8" placeholder="••••••••">
+        <div style="background: #222; height: 4px; border-radius: 2px; margin-top: 8px; width: 100%; overflow: hidden;">
+          <div id="passwordStrengthBar" style="height: 100%; width: 0%; transition: all 0.3s ease; background-color: transparent;"></div>
+        </div>
+        <small id="passwordStrengthText" style="display: block; margin-top: 4px; font-size: 0.8rem;"></small>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Repetir contraseña</label>
+        <input type="password" id="confirmPassword" class="form-control" required minlength="8" placeholder="••••••••">
+      </div>
+
+      <!-- Ethics Section -->
+      <div class="ethics-box mt-3 mb-3">
+        <h4 class="fw-semibold mb-2">Compromiso ético Nexus</h4>
+        <ul class="text-muted text-sm" style="font-size: 0.85rem; padding-left: 20px; list-style: disc;">
+          <li>No subirás contenido ofensivo o ilegal.</li>
+          <li>Respetarás los derechos de autor de terceros.</li>
+          <li>No publicarás información privada ajena.</li>
+          <li>Tu contenido puede pasar por revisión antes de ser público.</li>
+        </ul>
+      </div>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="terms" required>
+        <label for="terms" style="font-size: 0.9rem;">Acepto las normas comunitarias</label>
+      </div>
+      
+      <div id="formMessage" class="form-message" style="display: none; margin-bottom: 10px;"></div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-2">Crear cuenta</button>
+    </form>
+
+    <div class="auth-divider">
+      <span>o</span>
+    </div>
+
+    <button id="googleLoginBtn" class="btn btn-outline w-100" style="display:none;"></button>
+    <div id="googleButtonContainer" style="display: flex; justify-content: center; width: 100%; margin-top: 8px;"></div>
+
+    <div class="auth-footer">
+      ¿Ya tienes cuenta? <a href="login.html" class="text-primary fw-semibold">Inicia sesión</a>
+    </div>
+  </div>
+
+  <script src="../javascript/config.js?v=2"></script>
+  <script src="../javascript/api.js?v=2"></script>
+  <script src="../javascript/session.js"></script>
+  <script src="../javascript/ui.js"></script>
+  <script src="../javascript/auth.js?v=3"></script>
+</body>
 </html>

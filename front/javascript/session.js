@@ -1,6 +1,6 @@
-const PinCloudSession = (() => {
-  const tokenKey = "pincloud_token";
-  const userKey = "pincloud_user";
+const NexusSession = (() => {
+  const tokenKey = "nexus_token";
+  const userKey = "nexus_user";
 
   const setSession = payload => {
     localStorage.setItem(tokenKey, payload.access_token);
@@ -41,7 +41,7 @@ const PinCloudSession = (() => {
       const registerLink = document.createElement("a");
       registerLink.className = "btn primary";
       registerLink.href = "register.html";
-      registerLink.textContent = "Registrarse";
+      registerLink.textContent = "Unirse a la Red";
 
       container.appendChild(loginLink);
       container.appendChild(registerLink);
@@ -51,7 +51,7 @@ const PinCloudSession = (() => {
     const userLink = document.createElement("a");
     userLink.className = "btn ghost";
     userLink.href = "usuario.html";
-    userLink.textContent = user.full_name.split(" ")[0];
+    userLink.textContent = (user.DisplayName || "Usuario").split(" ")[0];
 
     const logoutButton = document.createElement("button");
     logoutButton.className = "btn soft";
