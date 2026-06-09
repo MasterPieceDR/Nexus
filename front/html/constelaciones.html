@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Constelaciones</title>
+    <link rel="stylesheet" href="../estilos/variables.css">
+    <link rel="stylesheet" href="../estilos/base.css">
+    <link rel="stylesheet" href="../estilos/constelaciones.css">
+</head>
+<body>
+    <header class="app-header">
+        <a href="index.html" class="brand">
+            <span class="brand-icon"></span>
+            <span>Nexus</span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="index.html">Explorar</a>
+            <a href="constelaciones.html" class="active">Constelaciones</a>
+            <a href="upload.html">Crear Nodo</a>
+        </nav>
+
+        <div class="header-actions">
+            <a href="usuario.html" class="profile-link" id="profileLink">Perfil</a>
+            <button class="btn-ghost" id="logoutBtn">Salir</button>
+        </div>
+    </header>
+
+    <main class="constellations-page">
+        <section class="hero-section">
+            <div class="hero-icon"></div>
+            <h1>Constelaciones</h1>
+            <p>Agrupa tus nodos en mapas visuales de ideas, recursos y conocimiento.</p>
+        </section>
+
+        <section class="create-section">
+            <div class="section-heading">
+                <div>
+                    <h2>Crear constelación</h2>
+                    <p>Organiza tus nodos por proyecto, tema o tecnología.</p>
+                </div>
+            </div>
+
+            <form id="constellationForm" class="constellation-form">
+                <div class="form-field">
+                    <label for="name">Nombre</label>
+                    <input type="text" id="name" name="name" placeholder="Ej: Arquitectura Cloud" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="visibility">Visibilidad</label>
+                    <select id="visibility" name="visibility">
+                        <option value="PUBLIC">Pública</option>
+                        <option value="PRIVATE">Privada</option>
+                        <option value="SECRET">Secreta</option>
+                    </select>
+                </div>
+
+                <div class="form-field" style="grid-column: 1 / -1;">
+                    <label for="description">Descripción</label>
+                    <textarea id="description" name="description" placeholder="Describe el propósito de esta constelación"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" style="grid-column: 1 / -1;">Crear constelación</button>
+            </form>
+        </section>
+
+        <section class="content-section">
+            <div class="section-heading">
+                <div>
+                    <h2>Mis constelaciones</h2>
+                    <p>Colecciones creadas por tu usuario.</p>
+                </div>
+            </div>
+
+            <div id="myConstellationsState" class="state-message">Cargando tus constelaciones...</div>
+            <div id="myConstellationsGrid" class="constellation-grid"></div>
+        </section>
+
+        <section class="content-section">
+            <div class="section-heading">
+                <div>
+                    <h2>Constelaciones públicas</h2>
+                    <p>Explora colecciones creadas por la comunidad.</p>
+                </div>
+
+                <input type="search" id="searchConstellations" class="search-input" placeholder="Buscar constelaciones">
+            </div>
+
+            <div id="publicConstellationsState" class="state-message">Cargando constelaciones públicas...</div>
+            <div id="publicConstellationsGrid" class="constellation-grid"></div>
+        </section>
+    </main>
+
+    <script src="../javascript/config.js"></script>
+    <script src="../javascript/api.js"></script>
+    <script src="../javascript/session.js"></script>
+    <script src="../javascript/constelaciones.js"></script>
+</body>
+</html>

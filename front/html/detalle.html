@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus - Detalle de Nodo</title>
+  <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/layout.css">
+  <link rel="stylesheet" href="../estilos/components.css?v=2">
+  <link rel="stylesheet" href="../estilos/detalle.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="main-header">
+    <div class="header-left">
+      <a href="index.html" class="header-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+          <line x1="12" y1="22" x2="12" y2="15.5"></line>
+          <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+          <polyline points="2 15.5 12 8.5 22 15.5"></polyline>
+          <line x1="12" y1="2" x2="12" y2="8.5"></line>
+        </svg>
+        Nexus
+      </a>
+      <nav class="header-nav">
+        <a href="index.html" class="nav-link">Explorar</a>
+        <a href="constelaciones.html" class="nav-link" id="navConstelaciones">Constelaciones</a>
+        <a href="upload.html" class="nav-link" id="navCrear" style="display: none;">Crear</a>
+      </nav>
+    </div>
+
+    <div class="header-right">
+      <div id="authActions">
+        <a href="login.html" class="btn btn-primary">Iniciar Sesi&oacute;n</a>
+      </div>
+
+      <div id="userMenu" class="user-menu" style="display: none;">
+        <div class="user-avatar" id="headerAvatar"></div>
+        <div class="dropdown-menu">
+          <a href="usuario.html" class="dropdown-item">Mi perfil</a>
+          <a href="biblioteca.html" class="dropdown-item">Mi biblioteca</a>
+          <a href="moderacion.html" class="dropdown-item" id="navModeracion" style="display: none;">Revisi&oacute;n Ã‰tica</a>
+          <a href="settings.html" class="dropdown-item">Configuraci&oacute;n</a>
+          <a href="#" class="dropdown-item text-danger" id="logoutBtn">Cerrar sesi&oacute;n</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content container detalle-container">
+    <div id="loadingIndicator" class="loader"></div>
+    
+    <div id="detalleContent" class="detalle-grid" style="display: none;">
+      <!-- Columna Izquierda: Visual -->
+      <div class="detalle-media-wrapper" id="mediaWrapper">
+        <!-- Imagen o video -->
+      </div>
+      
+      <!-- Columna Derecha: Informaci&oacute;n y Comentarios -->
+      <div class="detalle-info-panel">
+        <div class="detalle-top-actions">
+          <div class="action-buttons">
+            <button class="btn btn-outline" id="reportBtn" title="Reportar contenido">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+            </button>
+            <button class="btn btn-primary" id="saveBtn">Guardar</button>
+          </div>
+        </div>
+
+        <div class="detalle-metadata">
+          <div id="badgesContainer" class="mb-2"></div>
+          <h1 id="nodeTitle" class="detalle-title"></h1>
+          <p id="nodeDesc" class="detalle-desc text-muted"></p>
+          
+          <div class="detalle-author mt-3">
+            <div class="detalle-author-img"></div>
+            <div class="detalle-author-info">
+              <span id="authorName" class="fw-bold"></span>
+              <span id="nodeDate" class="text-sm text-muted"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detalle-comments-section">
+          <h3 class="fw-bold mb-3">Comentarios</h3>
+          
+          <form id="commentForm" class="comment-form" style="display: none;">
+            <input type="text" id="commentInput" class="form-control" placeholder="A&ntilde;adir un comentario..." required>
+            <button type="submit" class="btn btn-primary btn-icon" id="submitCommentBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+          </form>
+          <div id="loginToComment" class="text-muted mb-3" style="font-size: 0.9rem;">
+            <a href="login.html" class="text-primary fw-semibold">Inicia sesi&oacute;n</a> para comentar.
+          </div>
+
+          <div id="commentsList" class="comments-list">
+            <!-- Comentarios -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../javascript/config.js"></script>
+  <script src="../javascript/api.js"></script>
+  <script src="../javascript/session.js"></script>
+  <script src="../javascript/ui.js"></script>
+  <script src="../javascript/modal.js"></script>
+  <script src="../javascript/detalle.js"></script>
+</body>
+</html>

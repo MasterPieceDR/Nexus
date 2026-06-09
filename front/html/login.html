@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus - Iniciar Sesión</title>
+  <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/components.css">
+  <link rel="stylesheet" href="../estilos/auth.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="auth-page">
+
+  <div class="auth-container">
+    <div class="auth-logo">
+      <a href="landing.html" style="text-decoration: none;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+          <line x1="12" y1="22" x2="12" y2="15.5"></line>
+          <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+          <polyline points="2 15.5 12 8.5 22 15.5"></polyline>
+          <line x1="12" y1="2" x2="12" y2="8.5"></line>
+        </svg>
+      </a>
+    </div>
+    
+    <h1 class="auth-title">Bienvenido de nuevo</h1>
+    <p class="auth-subtitle">Ingresa tus credenciales para continuar explorando ideas visuales.</p>
+
+    <div id="formMessage" class="form-message" style="display: none;"></div>
+
+    <form id="loginForm" class="auth-form">
+      <div class="form-group">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input type="email" id="email" class="form-control" required placeholder="correo@ejemplo.com">
+      </div>
+      
+      <div class="form-group">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" id="password" class="form-control" required placeholder="••••••••">
+      </div>
+      
+      <button type="submit" class="btn btn-primary w-100 mt-2">Iniciar sesión</button>
+    </form>
+
+    <div class="auth-divider">
+      <span>o</span>
+    </div>
+
+    <button id="googleLoginBtn" class="btn btn-outline w-100" style="display:none;"></button>
+    <div id="googleButtonContainer" style="display: flex; justify-content: center; width: 100%; margin-top: 8px;"></div>
+
+    <div class="auth-footer">
+      ¿No tienes cuenta? <a href="register.html" class="text-primary fw-semibold">Regístrate</a>
+    </div>
+  </div>
+
+  <script src="../javascript/config.js?v=2"></script>
+  <script src="../javascript/api.js?v=2"></script>
+  <script src="../javascript/session.js"></script>
+  <script src="../javascript/ui.js"></script>
+  <script src="../javascript/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+/* landing.css - Estilos específicos para la landing oscura */
+
+.landing-body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  background-color: var(--color-primary);
+  color: #000;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.logo-text {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.5px;
+}
+
+.ml-3 { margin-left: 24px; }
+
+.nav-link-header {
+  color: #E5E7EB;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.nav-link-header:hover {
+  color: #fff;
+}
+
+.btn-outline-light {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-right: 12px;
+  transition: background 0.2s;
+}
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-neon {
+  background-color: var(--color-primary);
+  color: #000;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+}
+.btn-neon:hover {
+  background-color: var(--color-primary-light);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+}
+.btn-lg {
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  border-radius: 30px;
+}
+
+/* Hero Section */
+.hero-section {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 80px; /* Offset for header */
+}
+
+/* Fondo con las imágenes */
+.hero-bg-grid {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  opacity: 0.4; /* Opacidad baja para que el texto resalte */
+  z-index: 1;
+}
+
+.hero-image-card {
+  border-radius: 16px;
+  background-size: cover;
+  background-position: center;
+}
+
+.card-left {
+  width: 250px;
+  height: 350px;
+  background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'); /* Placa base */
+}
+.card-center {
+  width: 300px;
+  height: 450px;
+  background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'); /* Equipo trabajando */
+  transform: translateY(-20px);
+}
+.card-right {
+  width: 250px;
+  height: 350px;
+  background-image: url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'); /* Oficina */
+}
+.card-far-right {
+  width: 200px;
+  height: 250px;
+  background-image: url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'); /* Tierra / Espacio */
+  transform: translateY(40px);
+}
+
+/* Overlay gradient radial para oscurecer el centro y bordes */
+.hero-bg-grid::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at center, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.9) 70%, #000000 100%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.hero-title {
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  letter-spacing: -1px;
+}
+
+.text-neon {
+  color: var(--color-primary);
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: #D1D5DB;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}

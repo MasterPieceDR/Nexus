@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus - Mi Biblioteca</title>
+  <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/layout.css">
+  <link rel="stylesheet" href="../estilos/components.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="main-header">
+    <div class="header-left">
+      <a href="index.html" class="header-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+          <line x1="12" y1="22" x2="12" y2="15.5"></line>
+        </svg>
+        Nexus
+      </a>
+      <nav class="header-nav">
+        <a href="index.html" class="nav-link">Explorar</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <div id="userMenu" class="user-menu" style="display: none;">
+        <div class="user-avatar" id="headerAvatar"></div>
+        <div class="dropdown-menu">
+          <a href="usuario.html" class="dropdown-item">Mi perfil</a>
+          <a href="biblioteca.html" class="dropdown-item active">Mi biblioteca</a>
+          <a href="moderacion.html" class="dropdown-item" id="navModeracion" style="display: none;">Revisi&oacute;n Ã‰tica</a>
+          <a href="#" class="dropdown-item text-danger" id="logoutBtn">Cerrar sesi&oacute;n</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content container">
+    <div style="margin-bottom: 32px; border-bottom: 1px solid var(--color-border); padding-bottom: 24px;">
+      <h1>Mi Biblioteca</h1>
+      <p class="text-muted">Nodos visuales que has guardado para inspirarte despu&eacute;s.</p>
+    </div>
+
+    <div id="loadingIndicator" class="loader"></div>
+    <div id="emptyState" class="text-center mt-4 text-muted" style="display: none;">
+      <h3>A&uacute;n no has guardado nada</h3>
+      <p>Explora la comunidad y guarda los nodos que te interesen.</p>
+      <a href="index.html" class="btn btn-primary mt-3">Ir a Explorar</a>
+    </div>
+    
+    <div class="masonry-grid" id="savedFeed"></div>
+  </main>
+
+  <script src="../javascript/config.js"></script>
+  <script src="../javascript/api.js"></script>
+  <script src="../javascript/session.js"></script>
+  <script src="../javascript/ui.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!NexusSession.isAuthenticated()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const feed = document.getElementById("savedFeed");
+      const loading = document.getElementById("loadingIndicator");
+      const empty = document.getElementById("emptyState");
+
+      try {
+        // En una implementaci&oacute;n real se llamar&iacute;a a /api/users/me/saved
+        // Por el momento mostramos el empty state
+        loading.style.display = "none";
+        empty.style.display = "block";
+      } catch (error) {
+        loading.style.display = "none";
+        NexusUI.showToast("Error al cargar biblioteca", "error");
+      }
+    });
+  </script>
+</body>
+</html>

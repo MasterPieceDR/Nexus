@@ -1,0 +1,103 @@
+/* moderacion.css - Estilos para panel de moderación */
+
+.mod-container {
+  max-width: 1200px;
+}
+
+.mod-tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mod-tab {
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-muted);
+  border-bottom: 3px solid transparent;
+}
+
+.mod-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.mod-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.mod-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.mod-card-media {
+  width: 100%;
+  height: 200px;
+  background-color: var(--color-bg);
+  object-fit: cover;
+}
+
+.mod-card-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.mod-card-title {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.mod-card-meta {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-bottom: 16px;
+}
+
+.mod-card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.mod-card-actions .btn {
+  flex: 1;
+  padding: 8px;
+}
+
+/* Reportes List */
+.mod-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.report-item {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.report-info h4 {
+  margin-bottom: 4px;
+  color: var(--color-danger);
+}
+
+.report-meta {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}

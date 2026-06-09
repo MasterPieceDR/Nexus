@@ -1,0 +1,50 @@
+/* index.css - Estilos específicos para Explorar (Feed) */
+
+.categories-bar {
+  margin-bottom: 24px;
+}
+
+.category-chip {
+  font-size: 0.9rem;
+  padding: 8px 18px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.category-chip.active {
+  background-color: var(--color-text);
+  color: var(--color-surface);
+  border-color: var(--color-text);
+}
+
+.category-chip:hover:not(.active) {
+  background-color: var(--color-border);
+}
+
+/* Modificadores de la tarjeta en el Feed */
+.node-card {
+  background-color: transparent;
+}
+
+.node-card .node-image {
+  background-color: var(--color-bg);
+  /* Aspect ratios simulados para el Masonry */
+  min-height: 200px;
+}
+
+.node-info {
+  padding: 8px 0 16px 0;
+}
+
+.node-info .node-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.node-info .node-author {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}

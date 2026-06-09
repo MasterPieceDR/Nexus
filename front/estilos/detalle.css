@@ -1,0 +1,168 @@
+/* detalle.css - Estilos para Detalle de Nodo */
+
+.detalle-container {
+  max-width: 1200px;
+  padding-top: 40px;
+}
+
+.detalle-grid {
+  display: flex;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  min-height: 500px;
+}
+
+/* Columna de Media */
+.detalle-media-wrapper {
+  flex: 1;
+  background-color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-right: 1px solid var(--color-border);
+}
+
+.detalle-media-wrapper img, 
+.detalle-media-wrapper video {
+  max-height: 80vh;
+  width: 100%;
+  object-fit: contain;
+}
+
+/* Panel Derecho */
+.detalle-info-panel {
+  width: 450px;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+}
+
+.detalle-top-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.detalle-title {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+  color: var(--color-text);
+}
+
+.detalle-desc {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.detalle-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detalle-author-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-border);
+}
+
+.detalle-author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Comentarios */
+.detalle-comments-section {
+  margin-top: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.btn-icon {
+  padding: 10px 16px;
+}
+
+.comments-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+  max-height: 400px;
+}
+
+.comment-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.comment-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.comment-content {
+  flex: 1;
+  background-color: var(--color-bg);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border-top-left-radius: 0;
+}
+
+.comment-author {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.comment-text {
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.comment-date {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-top: 8px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .detalle-grid {
+    flex-direction: column;
+  }
+  
+  .detalle-media-wrapper {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .detalle-info-panel {
+    width: 100%;
+  }
+}

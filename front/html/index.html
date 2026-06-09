@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus - Mosaico Visual</title>
+  <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/layout.css">
+  <link rel="stylesheet" href="../estilos/components.css">
+  <link rel="stylesheet" href="../estilos/index.css">
+</head>
+<body>
+
+  <!-- Header Reutilizable -->
+  <header class="main-header">
+    <div class="header-left">
+      <a href="index.html" class="header-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+          <line x1="12" y1="22" x2="12" y2="15.5"></line>
+          <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+          <polyline points="2 15.5 12 8.5 22 15.5"></polyline>
+          <line x1="12" y1="2" x2="12" y2="8.5"></line>
+        </svg>
+        Nexus
+      </a>
+      <nav class="header-nav">
+        <a href="index.html" class="nav-link active">Explorar</a>
+        <a href="constelaciones.html" class="nav-link" id="navConstelaciones">Constelaciones</a>
+        <a href="upload.html" class="nav-link" id="navCrear" style="display: none;">Crear</a>
+      </nav>
+    </div>
+
+    <div class="header-search">
+      <div class="search-box">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Buscar ideas, recursos, diagramas o tecnolog&iacute;as...">
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div id="authActions">
+        <a href="login.html" class="btn btn-primary">Iniciar Sesi&oacute;n</a>
+        <a href="register.html" class="btn btn-outline" style="margin-left: 8px;">Registro</a>
+      </div>
+
+      <div id="userMenu" class="user-menu" style="display: none;">
+        <div class="user-avatar" id="headerAvatar"></div>
+        <div class="dropdown-menu">
+          <a href="usuario.html" class="dropdown-item">Mi perfil</a>
+          <a href="biblioteca.html" class="dropdown-item">Mi biblioteca</a>
+          <a href="moderacion.html" class="dropdown-item" id="navModeracion" style="display: none;">Revisi&oacute;n Ã‰tica</a>
+          <a href="settings.html" class="dropdown-item">Configuraci&oacute;n</a>
+          <a href="#" class="dropdown-item text-danger" id="logoutBtn">Cerrar sesi&oacute;n</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content container">
+    <!-- Barra de Categor&iacute;as -->
+    <div class="categories-bar" id="categoriesBar">
+      <button class="category-chip active" data-id="">Todas las &aacute;reas</button>
+      <!-- Rellenado din&aacute;micamente -->
+    </div>
+
+    <!-- Mosaico de Nodos -->
+    <div id="loadingIndicator" class="loader"></div>
+    <div id="emptyState" class="text-center mt-4 text-muted" style="display: none;">
+      <h3>No encontramos resultados</h3>
+      <p>Intenta con otros t&eacute;rminos o cambia el &aacute;rea.</p>
+    </div>
+    
+    <div class="masonry-grid" id="feedContainer">
+      <!-- Tarjetas insertadas por JS -->
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../javascript/config.js"></script>
+  <script src="../javascript/api.js"></script>
+  <script src="../javascript/session.js"></script>
+  <script src="../javascript/ui.js"></script>
+  <script src="../javascript/modal.js"></script>
+  <script src="../javascript/index.js"></script>
+</body>
+</html>
