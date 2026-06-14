@@ -8,7 +8,6 @@ from app.seguridad.dependencies import require_moderator
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
-
 @router.get("/metrics")
 def get_metrics(user: dict = Depends(require_moderator)):
     """Métricas generales para el dashboard."""
@@ -28,7 +27,6 @@ def get_metrics(user: dict = Depends(require_moderator)):
         return metrics
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.get("/users")
 def list_users(
@@ -52,7 +50,6 @@ def list_users(
         )
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.get("/pins")
 def list_pins(
@@ -89,7 +86,6 @@ def list_pins(
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 @router.get("/reports")
 def list_reports(
     status: str = Query(None, pattern="^(OPEN|RESOLVED)$"),
@@ -115,7 +111,6 @@ def list_reports(
         )
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.get("/reports/stats")
 def report_stats(user: dict = Depends(require_moderator)):
@@ -163,12 +158,11 @@ def report_stats(user: dict = Depends(require_moderator)):
             GROUP BY ResolvedByUserId
             ORDER BY Count DESC
         """)
-        # Build action summary from resolved reports using action_taken stored on resolve
-        # Fall back to querying the Reports table directly for content removed vs no action
+
         content_removed = next(
             (int(r.get("Count", 0) or 0) for r in (rows or []) if r.get("UserId")), 0
         )
-        # Simpler approach: count hidden pins that were OPEN reports vs RESOLVED without removal
+
         pass
     except Exception:
         pass
@@ -198,7 +192,6 @@ def report_stats(user: dict = Depends(require_moderator)):
 
     return {"summary": summary, "by_reason": by_reason, "by_action": by_action}
 
-
 @router.get("/validations")
 def list_ai_validations(
     page: int = Query(1, ge=1),
@@ -222,7 +215,6 @@ def list_ai_validations(
         )
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.get("/ratings/summary")
 def ratings_summary(user: dict = Depends(require_moderator)):
@@ -262,7 +254,6 @@ def ratings_summary(user: dict = Depends(require_moderator)):
         }
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.get("/audit")
 def list_audit(

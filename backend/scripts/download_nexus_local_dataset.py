@@ -360,13 +360,13 @@ def search_duckduckgo(query, page):
     results = []
     try:
         with DDGS() as ddgs:
-            # DuckDuckGo yields a generator, we just get a few depending on the page
+
             limit = PER_PAGE
             ddg_results = list(ddgs.images(query, max_results=limit * page))
-            # Slice the current page
+
             start_idx = (page - 1) * limit
             page_results = ddg_results[start_idx:start_idx + limit]
-            
+
             for idx, r in enumerate(page_results):
                 image_url = r.get("image")
                 if image_url:
@@ -573,7 +573,7 @@ def collect_dataset():
         category_dir = BACKEND_STATIC_DIR / category["slug"]
         category_dir.mkdir(parents=True, exist_ok=True)
         category_count = 0
-        
+
         urls = CATEGORY_IMAGES.get(category["slug"], [])
 
         while category_count < category_target:
@@ -587,7 +587,7 @@ def collect_dataset():
             try:
                 print(f"Descargando ({category_count + 1}/{category_target}) para {category['name']} desde Unsplash CDN...")
                 download_binary(image_url, local_path)
-                
+
                 item = {
                     "source": "unsplash_cdn",
                     "source_id": f"{category['slug']}-{global_index}",

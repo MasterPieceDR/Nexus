@@ -26,7 +26,7 @@ export default function CreatePin() {
   const [result, setResult] = useState(null);
   const [uploadedKey, setUploadedKey]   = useState(null);
   const [validating,  setValidating]    = useState(false);
-  const [validResult, setValidResult]   = useState(null); // {status,reason} | null
+  const [validResult, setValidResult]   = useState(null); 
 
   const fileInputRef = useRef(null);
   const navigate = useNavigate();

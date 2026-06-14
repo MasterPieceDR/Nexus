@@ -6,7 +6,7 @@ import CSSHero from '../components/CSSHero';
 
 function toBentoSrc(url, w = 600) {
   if (!url) return url;
-  // Imágenes subidas por usuarios → sirve WebP redimensionado vía thumb endpoint
+  
   if (url.includes('/static/uploads/images/')) {
     const path = url.replace(/^https?:\/\/[^/]+\/static\//, '');
     return `http://localhost:8000/api/media/thumb?path=${encodeURIComponent(path)}&w=${w}`;
@@ -66,7 +66,7 @@ export default function Landing() {
             }))
           );
         }
-      } catch { /* usa fallback */ }
+      } catch {  }
     };
     fetchFeatured();
   }, []);

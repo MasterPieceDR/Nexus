@@ -10,17 +10,14 @@ from ..config import settings
 router = APIRouter(prefix="/api/auth/github", tags=["auth", "github"])
 logger = logging.getLogger("nexus.github_auth")
 
-
 class GitHubCallbackRequest(BaseModel):
     code: str
-
 
 @router.post("/callback")
 def github_callback(payload: GitHubCallbackRequest, request: Request, background_tasks: BackgroundTasks):
     ip_address = request.client.host if request.client else "Unknown"
     user_agent = request.headers.get("user-agent", "Unknown")
 
-    # ── 1. Intercambiar code por access_token ─────────────────────────────────
     try:
         token_res = http_requests.post(
             "https://github.com/login/oauth/access_token",
@@ -44,7 +41,6 @@ def github_callback(payload: GitHubCallbackRequest, request: Request, background
         logger.error("GitHub token error: %s — %s", gh_error, gh_desc)
         raise HTTPException(status_code=400, detail=f"Autorización de GitHub rechazada: {gh_error}. Inténtalo de nuevo.")
 
-    # ── 2. Obtener perfil y email de GitHub ───────────────────────────────────
     try:
         gh_headers = {
             "Authorization": f"Bearer {access_token}",
@@ -69,7 +65,6 @@ def github_callback(payload: GitHubCallbackRequest, request: Request, background
 
     logger.info("GitHub login: %s (%s)", primary_email, display_name)
 
-    # ── 3. Buscar o crear usuario en BD ───────────────────────────────────────
     try:
         user = fetch_one(
             "SELECT UserId, DisplayName, Email, RoleId, Username FROM sec.Users WHERE Email = ?",
@@ -99,7 +94,6 @@ def github_callback(payload: GitHubCallbackRequest, request: Request, background
         logger.error("Error al crear/buscar usuario GitHub en BD: %s", e)
         raise HTTPException(status_code=500, detail=f"Error de base de datos al registrar usuario: {e}")
 
-    # ── 4. Registrar login externo (no crítico) ───────────────────────────────
     try:
         provider_row = fetch_one("SELECT ProviderId FROM sec.AuthProviders WHERE ProviderName = 'GITHUB'")
         if provider_row:
@@ -125,7 +119,6 @@ def github_callback(payload: GitHubCallbackRequest, request: Request, background
     except Exception as e:
         logger.warning("No se pudo registrar login externo GitHub (no crítico): %s", e)
 
-    # ── 5. Registrar evento de login (no crítico) ─────────────────────────────
     try:
         execute_query(
             """
@@ -138,7 +131,6 @@ def github_callback(payload: GitHubCallbackRequest, request: Request, background
     except Exception as e:
         logger.warning("No se pudo registrar LoginEvent GitHub (no crítico): %s", e)
 
-    # ── 6. Email de bienvenida / alerta ───────────────────────────────────────
     try:
         if is_new_user:
             background_tasks.add_task(send_welcome_email, user["Email"], user["DisplayName"], user.get("Username", ""))

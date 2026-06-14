@@ -15,11 +15,11 @@ class GoogleToken(BaseModel):
 @router.post("")
 def google_login(payload: GoogleToken, request: Request, background_tasks: BackgroundTasks):
     try:
-        # Validate Google token
+
         idinfo = id_token.verify_oauth2_token(
             payload.id_token, requests.Request(), settings.GOOGLE_CLIENT_ID
         )
-        
+
         email = idinfo["email"]
         display_name = idinfo.get("name", "")
         google_sub = idinfo["sub"]
@@ -28,7 +28,6 @@ def google_login(payload: GoogleToken, request: Request, background_tasks: Backg
         ip_address = request.client.host if request.client else "Unknown"
         user_agent = request.headers.get("user-agent", "Unknown")
 
-        # Check if user already exists
         existing_user = fetch_one("SELECT UserId FROM sec.Users WHERE Email = ?", [email])
         is_new_user = existing_user is None
 
@@ -44,7 +43,7 @@ def google_login(payload: GoogleToken, request: Request, background_tasks: Backg
             @IpAddress = ?,
             @UserAgent = ?,
             @UserId = @UserId OUTPUT;
-            
+
         SELECT 
             u.UserId, 
             u.DisplayName, 
@@ -58,7 +57,7 @@ def google_login(payload: GoogleToken, request: Request, background_tasks: Backg
         LEFT JOIN sec.UserProfiles p ON u.UserId = p.UserId
         WHERE u.UserId = @UserId;
         """
-        
+
         user_info = fetch_one(query, [
             google_sub, 
             email, 
@@ -90,7 +89,7 @@ def google_login(payload: GoogleToken, request: Request, background_tasks: Backg
             )
 
         access_token = create_access_token(str(user_info["UserId"]))
-        
+
         return {
             "access_token": access_token,
             "token_type": "bearer",

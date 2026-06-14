@@ -1,7 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
 
-
 class PostCreate(BaseModel):
     title: str = Field(min_length=3, max_length=150)
     description: str | None = Field(default=None, max_length=500)
@@ -13,10 +12,8 @@ class PostCreate(BaseModel):
     is_ai_generated: bool = False
     is_sensitive: bool = False
 
-
 class PostStatusUpdate(BaseModel):
     status: str = Field(pattern="^(PENDING|APPROVED|REJECTED|HIDDEN)$")
-
 
 class PostOut(BaseModel):
     id: int

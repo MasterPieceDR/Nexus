@@ -46,18 +46,16 @@ def check_username(username: str = Query(..., min_length=3, max_length=20)):
 
 @router.post("/register")
 def register(payload: UserCreate, background_tasks: BackgroundTasks):
-    # Validar formato de username
+
     if not USERNAME_RE.match(payload.username):
         raise HTTPException(
             status_code=422,
             detail="El usuario solo puede contener letras, números, puntos, guiones y guiones bajos (3-20 caracteres)."
         )
 
-    # Verificar disponibilidad de username
     if fetch_one("SELECT 1 AS X FROM sec.Users WHERE Username = ?", [payload.username.lower()]):
         raise HTTPException(status_code=409, detail="El nombre de usuario ya está en uso.")
 
-    # Verificar email único
     if fetch_one("SELECT UserId FROM sec.Users WHERE Email = ?", [payload.email.lower()]):
         raise HTTPException(status_code=409, detail="El correo electrónico ya está registrado.")
 

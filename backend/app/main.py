@@ -7,7 +7,6 @@ import logging
 import mimetypes
 from .config import settings
 
-
 class _StaticCacheMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         response = await call_next(request)
@@ -15,7 +14,6 @@ class _StaticCacheMiddleware(BaseHTTPMiddleware):
             response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
         return response
 
-# Suprime los 304 de archivos estáticos del log de acceso (son caché normal del navegador)
 class _StaticFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         msg = record.getMessage()
@@ -23,7 +21,6 @@ class _StaticFilter(logging.Filter):
 
 logging.getLogger('uvicorn.access').addFilter(_StaticFilter())
 
-# Fix: Windows no registra image/webp ni image/avif por defecto
 mimetypes.add_type('image/webp', '.webp')
 mimetypes.add_type('image/avif', '.avif')
 mimetypes.add_type('image/jpeg', '.jpg')
@@ -116,7 +113,6 @@ def _run_migrations():
         """)
     except Exception as exc:
         logging.getLogger("nexus.migrations").error("Migración UserViolations falló: %s", exc)
-
 
 @app.get("/")
 def root():

@@ -23,7 +23,6 @@ MAX_SIZE = 15 * 1024 * 1024
 THUMB_CACHE = Path("static/uploads/.cache")
 ALLOWED_THUMB_PREFIXES = ("uploads/images/", "uploads/avatars/", "seed/images/")
 
-
 def _to_webp(data: bytes, max_w: int = 1200, quality: int = 85) -> bytes:
     from PIL import Image
     img = Image.open(io.BytesIO(data))
@@ -38,7 +37,6 @@ def _to_webp(data: bytes, max_w: int = 1200, quality: int = 85) -> bytes:
     img.save(buf, format="WEBP", quality=quality, method=4)
     return buf.getvalue()
 
-
 @router.get("/thumb")
 def get_thumbnail(path: str, w: int = 1200, q: int = 85):
     """Sirve una versión WebP comprimida de cualquier imagen subida por usuarios.
@@ -50,7 +48,6 @@ def get_thumbnail(path: str, w: int = 1200, q: int = 85):
     if not src.exists():
         raise HTTPException(status_code=404, detail="Imagen no encontrada")
 
-    # Clave de caché única por path + dimensiones
     cache_name = f"{path.replace('/', '__').replace(' ', '_')}_{w}_{q}.webp"
     cache_path = THUMB_CACHE / cache_name
 
@@ -60,7 +57,7 @@ def get_thumbnail(path: str, w: int = 1200, q: int = 85):
             webp = _to_webp(src.read_bytes(), w, q)
             cache_path.write_bytes(webp)
         except Exception:
-            # Si falla la conversión, sirve el original
+
             return FileResponse(str(src), headers={"Cache-Control": "public, max-age=3600"})
 
     return FileResponse(
@@ -68,7 +65,6 @@ def get_thumbnail(path: str, w: int = 1200, q: int = 85):
         media_type="image/webp",
         headers={"Cache-Control": "public, max-age=604800"},
     )
-
 
 @router.post("/local")
 def upload_local_media(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
@@ -149,7 +145,6 @@ def upload_local_media(file: UploadFile = File(...), current_user: dict = Depend
         "MediaKind": media_kind,
         "MimeType": mime_type
     }
-
 
 @router.get("/me")
 def get_my_media(current_user: dict = Depends(get_current_user)):

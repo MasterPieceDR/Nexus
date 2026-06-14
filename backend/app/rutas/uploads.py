@@ -7,7 +7,6 @@ from ..services.s3_service import create_presigned_upload_url
 
 router = APIRouter(prefix="/api/uploads", tags=["uploads"])
 
-
 def _try_webp(data: bytes, max_w: int = 1200, quality: int = 85) -> bytes:
     """Intenta convertir bytes de imagen a WebP redimensionado. Devuelve original si falla."""
     try:
@@ -26,14 +25,12 @@ def _try_webp(data: bytes, max_w: int = 1200, quality: int = 85) -> bytes:
     except Exception:
         return data
 
-
 @router.post("/presigned-url", response_model=PresignedUploadResponse)
 def create_upload_url(payload: PresignedUploadRequest, user: dict = Depends(get_current_user)):
     try:
         return create_presigned_upload_url(user["UserId"], payload.filename, payload.content_type)
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
-
 
 @router.put("/local-upload")
 async def local_upload(key: str, request: Request):
@@ -43,7 +40,6 @@ async def local_upload(key: str, request: Request):
 
         content = await request.body()
 
-        # Para imágenes (no videos) intenta convertir a WebP antes de guardar
         lower_key = key.lower()
         is_image = any(lower_key.endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"))
         if is_image:

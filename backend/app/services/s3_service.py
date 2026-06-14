@@ -17,29 +17,25 @@ client = boto3.client(
     config=Config(signature_version="s3v4")
 )
 
-
 def normalize_filename(filename: str) -> str:
     name = filename.strip().lower()
     name = re.sub(r"[^a-z0-9.\-_]+", "-", name)
     return name[:140]
-
 
 def build_object_key(user_id: int, filename: str, content_type: str) -> str:
     folder = allowed_content_types.get(content_type)
     safe_name = normalize_filename(filename)
     return f"uploads/{folder}/{user_id}/{uuid4().hex}-{safe_name}"
 
-
 def validate_content_type(content_type: str) -> None:
     if content_type not in allowed_content_types:
         raise ValueError("Tipo de archivo no permitido")
-
 
 def create_presigned_upload_url(user_id: int, filename: str, content_type: str) -> dict:
     validate_content_type(content_type)
     key = build_object_key(user_id, filename, content_type)
     if settings.APP_ENV == "development":
-        # Local upload route mapping
+
         upload_url = f"http://127.0.0.1:8000/uploads/local-upload?key={key}"
         return {
             "upload_url": upload_url,
@@ -61,7 +57,6 @@ def create_presigned_upload_url(user_id: int, filename: str, content_type: str) 
         "s3_key": key,
         "expires_in": settings.AWS_PRESIGN_EXPIRATION
     }
-
 
 def create_presigned_get_url(key: str | None) -> str | None:
     if not key:

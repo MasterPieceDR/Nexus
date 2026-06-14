@@ -19,11 +19,11 @@ def ldap_login(payload: LdapLoginRequest, request: Request, background_tasks: Ba
 
     server_uri = f"ldap://{payload.domain}"
     user_principal = f"{payload.username}@{payload.domain}"
-    
+
     try:
         server = Server(server_uri, get_info=ALL)
         conn = Connection(server, user=user_principal, password=payload.password, authentication=NTLM)
-        
+
         if not conn.bind():
             query_fail = """
             INSERT INTO sec.LoginEvents (UserId, ProviderCode, IpAddress, UserAgent, WasSuccessful, FailureReason, CreatedAt)
@@ -33,17 +33,17 @@ def ldap_login(payload: LdapLoginRequest, request: Request, background_tasks: Ba
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid LDAP credentials")
 
         conn.search('dc=' + ',dc='.join(payload.domain.split('.')), f'(sAMAccountName={payload.username})', attributes=['mail', 'displayName', 'objectGUID'])
-        
+
         if not conn.entries:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="LDAP user details not found")
-            
+
         entry = conn.entries[0]
         email = str(entry.mail) if 'mail' in entry else f"{payload.username}@{payload.domain}"
         display_name = str(entry.displayName) if 'displayName' in entry else payload.username
         object_guid = str(entry.objectGUID) if 'objectGUID' in entry else None
 
         user = fetch_one("SELECT UserId, DisplayName, Email, RoleId FROM sec.Users WHERE Email = ?", [email.lower()])
-        
+
         if not user:
             role_id = 2
             query_insert = """

@@ -1,7 +1,6 @@
 USE NexusDB;
 GO
 
--- 1. Insertar Proveedores de Autenticacion (Si no existen)
 IF NOT EXISTS (SELECT 1 FROM sec.AuthProviders WHERE ProviderCode = 'LOCAL')
     INSERT INTO sec.AuthProviders (ProviderCode, ProviderName, IsActive, CreatedAt) 
     VALUES ('LOCAL', 'Correo y contraseña', 1, GETDATE());
@@ -19,7 +18,6 @@ IF NOT EXISTS (SELECT 1 FROM sec.AuthProviders WHERE ProviderCode = 'LDAP')
     VALUES ('LDAP', 'Active Directory / LDAP', 1, GETDATE());
 GO
 
--- 2. Modificar UserExternalLogins para incluir campos del plan
 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'sec.UserExternalLogins') AND name = 'ProviderEmail')
 BEGIN
     ALTER TABLE sec.UserExternalLogins ADD 
@@ -31,7 +29,6 @@ BEGIN
 END
 GO
 
--- 3. Crear tabla LoginEvents (Auditoria de Ingresos)
 IF OBJECT_ID('sec.LoginEvents', 'U') IS NULL
 BEGIN
     CREATE TABLE sec.LoginEvents (
@@ -48,7 +45,6 @@ BEGIN
 END
 GO
 
--- 4. Crear tabla LdapUserLinks (Active Directory)
 IF OBJECT_ID('sec.LdapUserLinks', 'U') IS NULL
 BEGIN
     CREATE TABLE sec.LdapUserLinks (
@@ -65,12 +61,11 @@ BEGIN
 END
 GO
 
--- 5. Crear tabla UserPreferences (Temas de UI)
 IF OBJECT_ID('sec.UserPreferences', 'U') IS NULL
 BEGIN
     CREATE TABLE sec.UserPreferences (
         UserId BIGINT PRIMARY KEY REFERENCES sec.Users(UserId),
-        ThemeMode NVARCHAR(20) NOT NULL DEFAULT 'SYSTEM', -- LIGHT, DARK, SYSTEM
+        ThemeMode NVARCHAR(20) NOT NULL DEFAULT 'SYSTEM',
         AccentColor NVARCHAR(20) NOT NULL DEFAULT 'GREEN',
         ReducedMotion BIT NOT NULL DEFAULT 0,
         EmailLoginAlerts BIT NOT NULL DEFAULT 1,
@@ -79,7 +74,6 @@ BEGIN
 END
 GO
 
--- 6. Crear tabla NodeEthics (IA y contenido sensible)
 IF OBJECT_ID('content.NodeEthics', 'U') IS NULL
 BEGIN
     CREATE TABLE content.NodeEthics (
@@ -95,7 +89,6 @@ BEGIN
 END
 GO
 
--- 7. Crear tabla EmailAuditLog (Auditoria de correos)
 IF OBJECT_ID('audit.EmailAuditLog', 'U') IS NULL
 BEGIN
     CREATE TABLE audit.EmailAuditLog (

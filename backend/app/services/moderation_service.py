@@ -21,11 +21,9 @@ from app.db.connection import fetch_one, execute_query
 
 logger = logging.getLogger("nexus.moderation")
 
-# Umbral por encima del cual el contenido se bloquea automáticamente
 BLOCK_THRESHOLD = 0.85
-# Umbral por encima del cual el contenido queda pendiente de revisión manual
-REVIEW_THRESHOLD = 0.45
 
+REVIEW_THRESHOLD = 0.45
 
 def _standard_result(provider: str, score: float | None, labels: list | None,
                      ocr_text: str | None, is_explicit: bool, is_illegal: bool,
@@ -41,9 +39,6 @@ def _standard_result(provider: str, score: float | None, labels: list | None,
         "status": status,
         "reason": reason,
     }
-
-
-# ── Proveedores ───────────────────────────────────────────────────────────────
 
 def _moderate_mock(image_path: str) -> dict:
     """Modo seguro sin credenciales: nunca aprueba automáticamente.
@@ -63,10 +58,9 @@ def _moderate_mock(image_path: str) -> dict:
         reason="Sin proveedor de IA configurado: requiere revisión manual del moderador.",
     )
 
-
 def _moderate_google_vision(image_path: str) -> dict:
     """Google Cloud Vision: SafeSearch + OCR (TEXT_DETECTION)."""
-    from google.cloud import vision  # import diferido: dependencia opcional
+    from google.cloud import vision
 
     client = vision.ImageAnnotatorClient()
     with open(image_path, "rb") as f:
@@ -76,7 +70,6 @@ def _moderate_google_vision(image_path: str) -> dict:
     ocr = client.text_detection(image=image)
     ocr_text = ocr.text_annotations[0].description if ocr.text_annotations else None
 
-    # Likelihood: 0=UNKNOWN .. 5=VERY_LIKELY → normalizamos a 0..1
     levels = {0: 0.0, 1: 0.0, 2: 0.25, 3: 0.5, 4: 0.75, 5: 1.0}
     adult = levels[safe.adult]
     violence = levels[safe.violence]
@@ -102,10 +95,9 @@ def _moderate_google_vision(image_path: str) -> dict:
     return _standard_result("GOOGLE_VISION", score, labels, ocr_text,
                             is_explicit, is_illegal, is_safe_for_minors, status, reason)
 
-
 def _moderate_aws_rekognition(image_path: str) -> dict:
     """AWS Rekognition: DetectModerationLabels + DetectText (OCR)."""
-    import boto3  # ya es dependencia del proyecto
+    import boto3
 
     client = boto3.client("rekognition", region_name=settings.AWS_REGION)
     with open(image_path, "rb") as f:
@@ -139,7 +131,6 @@ def _moderate_aws_rekognition(image_path: str) -> dict:
     return _standard_result("AWS_REKOGNITION", score, labels, ocr_text,
                             is_explicit, is_illegal, is_safe_for_minors, status, reason)
 
-
 def _moderate_hf_nsfw(image_path: str) -> dict:
     """Hugging Face inference API con un detector NSFW (p. ej. Falconsai/nsfw_image_detection)."""
     import mimetypes
@@ -172,16 +163,12 @@ def _moderate_hf_nsfw(image_path: str) -> dict:
     return _standard_result("HF_NSFW", nsfw_score, labels, None,
                             is_explicit, False, is_safe_for_minors, status, reason)
 
-
 _PROVIDERS = {
     "MOCK": _moderate_mock,
     "GOOGLE_VISION": _moderate_google_vision,
     "AWS_REKOGNITION": _moderate_aws_rekognition,
     "HF_NSFW": _moderate_hf_nsfw,
 }
-
-
-# ── API pública del servicio ──────────────────────────────────────────────────
 
 def moderate_image(image_path: str, pin_id: Optional[int] = None,
                    media_id: Optional[int] = None) -> dict:
@@ -207,7 +194,6 @@ def moderate_image(image_path: str, pin_id: Optional[int] = None,
 
     save_validation(result, pin_id=pin_id, media_id=media_id)
     return result
-
 
 def save_validation(result: dict, pin_id: Optional[int] = None,
                     media_id: Optional[int] = None) -> None:
@@ -236,7 +222,6 @@ def save_validation(result: dict, pin_id: Optional[int] = None,
         )
     except Exception as error:
         logger.error("No se pudo guardar la validación IA: %s", error)
-
 
 def get_validation_for_pin(pin_id: int) -> Optional[dict]:
     """Última validación registrada para un pin."""

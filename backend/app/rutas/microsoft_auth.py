@@ -24,7 +24,7 @@ def microsoft_callback(payload: MicrosoftLoginRequest, request: Request, backgro
         if is_new_user:
             base_username = payload.email.lower().split('@')[0]
             username = base_username
-            # Garantizar unicidad del username
+
             suffix = 1
             while fetch_one("SELECT 1 AS X FROM sec.Users WHERE Username = ?", [username]):
                 username = f"{base_username}{suffix}"

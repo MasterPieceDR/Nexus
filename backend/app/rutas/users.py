@@ -43,11 +43,8 @@ def _format_date(dt_val) -> str:
 
 @router.get("/me")
 def get_me(user: dict = Depends(get_current_user)):
-    # We strip sensitive info if needed, but user dict already lacks password
+
     return user
-
-
-# ── Perfil editable (datos personales + campos profesionales/empresa) ─────────
 
 class ProfileUpdate(BaseModel):
     display_name: Optional[str] = None
@@ -56,7 +53,7 @@ class ProfileUpdate(BaseModel):
     avatar_url: Optional[str] = None
     website_url: Optional[str] = None
     location_name: Optional[str] = None
-    # Campos profesionales / empresa
+
     is_company: Optional[bool] = None
     company_name: Optional[str] = None
     mission: Optional[str] = None
@@ -65,7 +62,6 @@ class ProfileUpdate(BaseModel):
     company_description: Optional[str] = None
     contact_email: Optional[str] = None
     contact_phone: Optional[str] = None
-
 
 @router.get("/me/profile")
 def get_my_profile(user: dict = Depends(get_current_user)):
@@ -90,11 +86,10 @@ def get_my_profile(user: dict = Depends(get_current_user)):
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 @router.put("/me/profile")
 def update_my_profile(payload: ProfileUpdate, user: dict = Depends(get_current_user)):
     try:
-        # 1. Datos base del usuario (nombre visible y username)
+
         if payload.display_name is not None and payload.display_name.strip():
             execute_query(
                 "UPDATE sec.Users SET DisplayName = ?, UpdatedAt = SYSDATETIME() WHERE UserId = ?",
@@ -113,7 +108,6 @@ def update_my_profile(payload: ProfileUpdate, user: dict = Depends(get_current_u
                 [new_username, user["UserId"]],
             )
 
-        # 2. Perfil extendido (upsert en sec.UserProfiles)
         execute_query(
             """
             MERGE sec.UserProfiles AS target
@@ -152,7 +146,6 @@ def update_my_profile(payload: ProfileUpdate, user: dict = Depends(get_current_u
             ],
         )
 
-        # 3. Auditoría
         execute_query(
             """
             EXEC audit.usp_WriteAuditLog
@@ -187,7 +180,6 @@ def get_my_notifications(user: dict = Depends(get_current_user)):
 
         notifications = []
 
-        # Static welcome / system notification first
         notifications.append({
             "id": "sys-0",
             "type": "system",
@@ -228,7 +220,7 @@ def get_my_notifications(user: dict = Depends(get_current_user)):
                 "title": title,
                 "body": body,
                 "date": date_str,
-                "isRead": i > 0,  # Mark only the most recent as unread
+                "isRead": i > 0,
             })
 
         return notifications
@@ -339,9 +331,6 @@ def submit_feedback(payload: FeedbackPayload, user: dict = Depends(get_current_u
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
-# ── Búsqueda de usuarios (pública) ───────────────────────────────────────────
-
 @router.get("/search")
 def search_users(q: str = Query(..., min_length=2, max_length=50)):
     try:
@@ -367,9 +356,6 @@ def search_users(q: str = Query(..., min_length=2, max_length=50)):
         return results
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
-
-# ── Upload de avatar ──────────────────────────────────────────────────────────
 
 AVATAR_ALLOWED = {"image/jpeg", "image/png", "image/webp"}
 AVATAR_MAX_MB  = 5
@@ -400,9 +386,6 @@ async def upload_avatar(file: UploadFile = File(...), user: dict = Depends(get_c
     )
     return {"avatar_url": avatar_url}
 
-
-# ── Perfil público (sin autenticación requerida) ──────────────────────────────
-
 @router.get("/{user_id}/public")
 def get_public_profile(user_id: int):
     try:
@@ -427,7 +410,6 @@ def get_public_profile(user_id: int):
         raise
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.get("/{user_id}/pins")
 def get_user_public_pins(user_id: int, page: int = 1, size: int = 30):
@@ -459,6 +441,3 @@ def get_user_public_pins(user_id: int, page: int = 1, size: int = 30):
         return pins
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
-
-

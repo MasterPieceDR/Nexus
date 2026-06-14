@@ -1,11 +1,10 @@
-from fastapi import APIRouter, HTTPException, Query, Depends, BackgroundTasks  # BackgroundTasks used in search/feed
+from fastapi import APIRouter, HTTPException, Query, Depends, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional
 from app.db.connection import fetch_all, fetch_one, execute_query
 from app.seguridad.dependencies import get_current_user, get_optional_user, require_moderator
 
 router = APIRouter(prefix="/api/pins", tags=["Pins"])
-
 
 def _log_search(user_id: Optional[int], search: Optional[str], category_id: Optional[int], results: int):
     """Registra la búsqueda para alimentar el feed personalizado (best effort)."""
@@ -19,7 +18,6 @@ def _log_search(user_id: Optional[int], search: Optional[str], category_id: Opti
     except Exception:
         pass
 
-
 def _log_view(user_id: int, pin_id: int):
     """Registra la vista de un pin para el feed personalizado (best effort)."""
     try:
@@ -29,7 +27,6 @@ def _log_view(user_id: int, pin_id: int):
         )
     except Exception:
         pass
-
 
 def _attach_viewer_likes(pins: list, viewer_id: Optional[int]) -> list:
     """Marca IsLikedByViewer sin N+1: una sola consulta para los pins visibles."""
@@ -51,7 +48,6 @@ def _attach_viewer_likes(pins: list, viewer_id: Optional[int]) -> list:
         p["IsLikedByViewer"] = 1 if p["PinId"] in liked_set else 0
     return pins
 
-
 @router.get("/feed")
 def get_feed(page: int = Query(1, ge=1), size: int = Query(30, ge=1, le=100), user: dict | None = Depends(get_optional_user)):
     try:
@@ -66,7 +62,6 @@ def get_feed(page: int = Query(1, ge=1), size: int = Query(30, ge=1, le=100), us
         return _attach_viewer_likes(pins, viewer_id)
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.get("/search")
 def search_pins(
@@ -101,7 +96,6 @@ def search_pins(
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 @router.get("/for-you")
 def get_personalized_feed(
     page: int = Query(1, ge=1),
@@ -121,7 +115,6 @@ def get_personalized_feed(
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 @router.get("/validate-preview")
 def validate_image_preview(key: str = Query(...), user: dict = Depends(get_current_user)):
     """Valida una imagen ya subida sin crear un pin. Permite feedback inmediato al usuario."""
@@ -135,7 +128,6 @@ def validate_image_preview(key: str = Query(...), user: dict = Depends(get_curre
         return {"status": result["status"], "reason": result["reason"]}
     except Exception:
         return {"status": "PENDING", "reason": "No se pudo evaluar la imagen."}
-
 
 @router.get("/{pin_id}")
 def get_pin_detail(pin_id: int, background_tasks: BackgroundTasks, user: dict | None = Depends(get_optional_user)):
@@ -167,7 +159,6 @@ def get_pin_detail(pin_id: int, background_tasks: BackgroundTasks, user: dict | 
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 @router.get("/{pin_id}/comments")
 def get_pin_comments(pin_id: int):
     try:
@@ -186,10 +177,8 @@ def get_pin_comments(pin_id: int):
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 class CommentCreatePayload(BaseModel):
     content: str
-
 
 @router.post("/{pin_id}/comments")
 def create_pin_comment(pin_id: int, payload: CommentCreatePayload, user: dict = Depends(get_current_user)):
@@ -211,7 +200,6 @@ def create_pin_comment(pin_id: int, payload: CommentCreatePayload, user: dict = 
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 class PinCreate(BaseModel):
     title: str
     description: Optional[str] = None
@@ -223,7 +211,6 @@ class PinCreate(BaseModel):
     source_url: Optional[str] = None
     is_ai_generated: bool = False
     is_sensitive: bool = False
-
 
 @router.post("")
 def create_pin(payload: PinCreate, user: dict = Depends(get_current_user)):
@@ -271,7 +258,6 @@ def create_pin(payload: PinCreate, user: dict = Depends(get_current_user)):
         pin_id = pin["PinId"]
         local_path = os.path.join("static", payload.s3_key)
 
-        # Videos y archivos no encontrados: revisión manual
         if media_kind == "VIDEO" or not os.path.exists(local_path):
             return {
                 "status": "success",
@@ -280,7 +266,6 @@ def create_pin(payload: PinCreate, user: dict = Depends(get_current_user)):
                 "moderation_reason": "Los videos requieren revisión manual antes de aparecer en el feed.",
             }
 
-        # Imágenes: moderación SÍNCRONA — el usuario ve el resultado en tiempo real
         result = moderate_image(local_path, pin_id, media_asset["MediaId"])
         mod_status = result["status"]
         mod_reason = result["reason"]
@@ -331,7 +316,6 @@ def create_pin(payload: PinCreate, user: dict = Depends(get_current_user)):
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 @router.delete("/{pin_id}")
 def delete_pin(pin_id: int, user: dict = Depends(get_current_user)):
     """Eliminación suave de un pin. Solo el dueño o un moderador/admin puede eliminar."""
@@ -353,14 +337,12 @@ def delete_pin(pin_id: int, user: dict = Depends(get_current_user)):
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 class PinStatusUpdate(BaseModel):
-    status: str  # 'APPROVED' | 'REJECTED' | 'HIDDEN'
-
+    status: str
 
 @router.patch("/{pin_id}/status")
 def update_pin_status(pin_id: int, payload: PinStatusUpdate, user: dict = Depends(get_current_user)):
-    # Restricción de acceso: solo Administradores o Moderadores
+
     if user.get("RoleId") not in [1, 2]:
         raise HTTPException(status_code=403, detail="No tienes permisos para moderar contenido")
 
@@ -379,10 +361,8 @@ def update_pin_status(pin_id: int, payload: PinStatusUpdate, user: dict = Depend
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 class PinVerifyUpdate(BaseModel):
-    verified_status: str  # UNVERIFIED | PENDING_VERIFICATION | VERIFIED | REJECTED
-
+    verified_status: str
 
 @router.patch("/{pin_id}/verify")
 def verify_pin(pin_id: int, payload: PinVerifyUpdate, user: dict = Depends(require_moderator)):
@@ -398,7 +378,6 @@ def verify_pin(pin_id: int, payload: PinVerifyUpdate, user: dict = Depends(requi
         return {"status": "success", "verified_status": payload.verified_status}
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.post("/{pin_id}/like")
 def like_pin(pin_id: int, user: dict = Depends(get_current_user)):
@@ -417,7 +396,6 @@ def like_pin(pin_id: int, user: dict = Depends(get_current_user)):
             return {"status": "success", "message": "Pin liked", "liked": True}
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.post("/{pin_id}/save")
 def save_pin(pin_id: int, user: dict = Depends(get_current_user)):

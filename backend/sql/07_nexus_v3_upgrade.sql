@@ -1,15 +1,6 @@
--- ═══════════════════════════════════════════════════════════════════════════
--- NEXUS V3 UPGRADE — Migración incremental (idempotente, no destruye datos)
--- Cubre: perfil/empresa, verificación de información, valoraciones de la app,
--- validaciones IA/OCR, interacciones para feed personalizado e índices.
--- Ejecutar después de 01..06. Seguro de re-ejecutar.
--- ═══════════════════════════════════════════════════════════════════════════
 USE NexusDB;
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 1. PERFIL: campos profesionales / empresa + teléfono de usuario
--- ─────────────────────────────────────────────────────────────────────────────
 IF COL_LENGTH('sec.UserProfiles', 'IsCompany') IS NULL
     ALTER TABLE sec.UserProfiles ADD IsCompany BIT NOT NULL DEFAULT 0;
 IF COL_LENGTH('sec.UserProfiles', 'CompanyName') IS NULL
@@ -30,10 +21,6 @@ IF COL_LENGTH('sec.Users', 'PhoneNumber') IS NULL
     ALTER TABLE sec.Users ADD PhoneNumber NVARCHAR(30) NULL;
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 2. VERIFICACIÓN DE INFORMACIÓN en Pins
---    Estados: UNVERIFIED | PENDING_VERIFICATION | VERIFIED | REJECTED
--- ─────────────────────────────────────────────────────────────────────────────
 IF COL_LENGTH('content.Pins', 'AuthorClaim') IS NULL
     ALTER TABLE content.Pins ADD AuthorClaim NVARCHAR(255) NULL;
 IF COL_LENGTH('content.Pins', 'VerifiedStatus') IS NULL
@@ -44,32 +31,26 @@ IF COL_LENGTH('content.Pins', 'VerifiedAt') IS NULL
     ALTER TABLE content.Pins ADD VerifiedAt DATETIME2 NULL;
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 3. VALIDACIONES IA / OCR (resultados de moderación automática)
--- ─────────────────────────────────────────────────────────────────────────────
 IF OBJECT_ID('moderation.AiValidations', 'U') IS NULL
 BEGIN
     CREATE TABLE moderation.AiValidations (
         ValidationId BIGINT IDENTITY(1,1) PRIMARY KEY,
         PinId BIGINT NULL REFERENCES content.Pins(PinId),
         MediaId BIGINT NULL,
-        Provider NVARCHAR(60) NOT NULL,            -- MOCK | GOOGLE_VISION | AWS_REKOGNITION | HF_NSFW | CLOUDINARY
-        Score DECIMAL(5,4) NULL,                   -- 0.0000 - 1.0000 (probabilidad de contenido no seguro)
-        Labels NVARCHAR(MAX) NULL,                 -- JSON con etiquetas detectadas
-        OcrText NVARCHAR(MAX) NULL,                -- texto extraído de la imagen
+        Provider NVARCHAR(60) NOT NULL,
+        Score DECIMAL(5,4) NULL,
+        Labels NVARCHAR(MAX) NULL,
+        OcrText NVARCHAR(MAX) NULL,
         IsExplicit BIT NOT NULL DEFAULT 0,
         IsIllegal BIT NOT NULL DEFAULT 0,
         IsSafeForMinors BIT NOT NULL DEFAULT 1,
-        Status NVARCHAR(30) NOT NULL,              -- APPROVED | PENDING | BLOCKED
+        Status NVARCHAR(30) NOT NULL,
         Reason NVARCHAR(500) NULL,
         CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME()
     );
 END
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 4. VALORACIONES DE LA APLICACIÓN (estrellas + comentario)
--- ─────────────────────────────────────────────────────────────────────────────
 IF OBJECT_ID('core.AppRatings', 'U') IS NULL
 BEGIN
     CREATE TABLE core.AppRatings (
@@ -82,9 +63,6 @@ BEGIN
 END
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 5. INTERACCIONES para feed personalizado
--- ─────────────────────────────────────────────────────────────────────────────
 IF OBJECT_ID('social.PinViews', 'U') IS NULL
 BEGIN
     CREATE TABLE social.PinViews (
@@ -114,16 +92,13 @@ BEGIN
     CREATE TABLE social.UserInterests (
         UserId BIGINT NOT NULL REFERENCES sec.Users(UserId),
         CategoryId INT NOT NULL REFERENCES core.Categories(CategoryId),
-        Score DECIMAL(10,2) NOT NULL DEFAULT 0,    -- acumulado por likes/saves/views/searches
+        Score DECIMAL(10,2) NOT NULL DEFAULT 0,
         UpdatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
         PRIMARY KEY (UserId, CategoryId)
     );
 END
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 6. ÍNDICES de optimización (solo si no existen)
--- ─────────────────────────────────────────────────────────────────────────────
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Pins_Status_PublishedAt')
     CREATE INDEX IX_Pins_Status_PublishedAt ON content.Pins (Status, Visibility, PublishedAt DESC) INCLUDE (CategoryId, OwnerUserId) WHERE DeletedAt IS NULL;
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Pins_Owner')
@@ -156,9 +131,6 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Tags_Slug')
     CREATE INDEX IX_Tags_Slug ON core.Tags (Slug);
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 7. usp_GetFeed: incluir VerifiedStatus y SourceUrl (compatible hacia atrás)
--- ─────────────────────────────────────────────────────────────────────────────
 CREATE OR ALTER PROCEDURE content.usp_GetFeed
     @ViewerUserId BIGINT = NULL,
     @PageNumber INT = 1,
@@ -199,16 +171,13 @@ BEGIN
 END
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 8. usp_SearchPinsV2: filtros avanzados (autor, verificados, orden) + DTO completo
--- ─────────────────────────────────────────────────────────────────────────────
 CREATE OR ALTER PROCEDURE content.usp_SearchPinsV2
     @Search NVARCHAR(200) = NULL,
     @CategoryId INT = NULL,
     @TagSlug NVARCHAR(100) = NULL,
     @AuthorUsername NVARCHAR(100) = NULL,
     @VerifiedOnly BIT = 0,
-    @SortBy NVARCHAR(20) = N'recent',      -- recent | popular
+    @SortBy NVARCHAR(20) = N'recent',
     @ViewerUserId BIGINT = NULL,
     @PageNumber INT = 1,
     @PageSize INT = 30
@@ -268,10 +237,6 @@ BEGIN
 END
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 9. usp_GetPersonalizedFeed: feed según intereses del usuario
---    (likes x3, saves x4, vistas x1, búsquedas x2 — acumulados por categoría)
--- ─────────────────────────────────────────────────────────────────────────────
 CREATE OR ALTER PROCEDURE content.usp_GetPersonalizedFeed
     @ViewerUserId BIGINT,
     @PageNumber INT = 1,
@@ -283,7 +248,6 @@ BEGIN
     IF @PageSize < 1 SET @PageSize = 30;
     IF @PageSize > 100 SET @PageSize = 100;
 
-    -- Señales de interés por categoría (calculadas al vuelo, baratas con los índices)
     ;WITH Signals AS (
         SELECT P.CategoryId, COUNT(*) * 3.0 AS S
         FROM content.PinReactions R
@@ -344,12 +308,9 @@ BEGIN
 END
 GO
 
--- ─────────────────────────────────────────────────────────────────────────────
--- 10. usp_VerifyPin: validación manual de información (solo admin/moderador)
--- ─────────────────────────────────────────────────────────────────────────────
 CREATE OR ALTER PROCEDURE content.usp_VerifyPin
     @PinId BIGINT,
-    @VerifiedStatus NVARCHAR(30),     -- UNVERIFIED | PENDING_VERIFICATION | VERIFIED | REJECTED
+    @VerifiedStatus NVARCHAR(30),
     @ActorUserId BIGINT
 AS
 BEGIN

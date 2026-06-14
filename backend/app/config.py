@@ -26,8 +26,6 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_ID: str = ""
     GITHUB_CLIENT_SECRET: str = ""
 
-    # ── Cloud / almacenamiento multimedia ────────────────────────────────────
-    # CLOUD_PROVIDER: LOCAL | S3 | CLOUDINARY
     CLOUD_PROVIDER: str = "LOCAL"
     AWS_REGION: str = "us-east-1"
     AWS_MEDIA_BUCKET: str = "nexus-dev-media"
@@ -46,14 +44,10 @@ class Settings(BaseSettings):
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
 
-    # ── Moderación IA/OCR ─────────────────────────────────────────────────────
-    # MODERATION_PROVIDER: MOCK | GOOGLE_VISION | AWS_REKOGNITION | HF_NSFW
     MODERATION_PROVIDER: str = "MOCK"
     HF_API_TOKEN: str = ""
     HF_NSFW_MODEL: str = "Falconsai/nsfw_image_detection"
 
-    # ── WhatsApp ──────────────────────────────────────────────────────────────
-    # WHATSAPP_PROVIDER: MOCK | TWILIO
     WHATSAPP_PROVIDER: str = "MOCK"
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""

@@ -19,7 +19,7 @@ class ReportResolve(BaseModel):
 
 @router.get("/pending")
 def get_pending_nodes(current_user: dict = Depends(require_moderator)):
-    
+
     query = """
     SELECT
         P.PinId,
@@ -63,7 +63,7 @@ def update_pin_status(pin_id: int, payload: StatusUpdate, current_user: dict = D
             """,
             [payload.status, payload.status, payload.is_ai_generated, payload.is_sensitive, pin_id]
         )
-        
+
         execute_query(
             """
             MERGE content.NodeEthics AS target

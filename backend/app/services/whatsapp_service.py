@@ -15,9 +15,8 @@ from app.db.connection import execute_query
 
 logger = logging.getLogger("nexus.whatsapp")
 
-
 def _send_twilio(phone: str, message: str) -> bool:
-    from twilio.rest import Client  # dependencia opcional
+    from twilio.rest import Client
 
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
     client.messages.create(
@@ -27,11 +26,9 @@ def _send_twilio(phone: str, message: str) -> bool:
     )
     return True
 
-
 def _send_mock(phone: str, message: str) -> bool:
     logger.info("[WHATSAPP MOCK] Para %s: %s", phone, message)
     return True
-
 
 def send_whatsapp(phone: str, message: str, user_id: int | None = None) -> bool:
     """Envía un mensaje de WhatsApp. Devuelve True si se envió (o se simuló)."""
@@ -49,7 +46,6 @@ def send_whatsapp(phone: str, message: str, user_id: int | None = None) -> bool:
         logger.warning("Fallo enviando WhatsApp vía %s: %s", provider, error)
         sent = False
 
-    # Auditoría del intento (sin guardar el contenido completo por privacidad)
     try:
         execute_query(
             """
@@ -66,7 +62,6 @@ def send_whatsapp(phone: str, message: str, user_id: int | None = None) -> bool:
         pass
 
     return sent
-
 
 def send_welcome_whatsapp(phone: str, display_name: str, user_id: int | None = None) -> bool:
     message = (

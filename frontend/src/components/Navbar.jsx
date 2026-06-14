@@ -172,7 +172,7 @@ export default function Sidebar() {
     if (notifications.length === 0) {
       setNotifLoading(true);
       try { const data = await getUserNotifications(); setNotifications(data); setUnreadCount(0); }
-      catch { /* best effort */ } finally { setNotifLoading(false); }
+      catch {  } finally { setNotifLoading(false); }
     } else { setUnreadCount(0); }
   };
 

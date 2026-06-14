@@ -5,7 +5,6 @@ from app.seguridad.dependencies import get_current_user
 
 router = APIRouter(prefix="/api/constellations", tags=["Constellations"])
 
-
 @router.get("")
 def get_public_constellations(search: str | None = Query(default=None)):
     try:
@@ -17,7 +16,6 @@ def get_public_constellations(search: str | None = Query(default=None)):
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
 
-
 @router.get("/me")
 def get_my_constellations(current_user: dict = Depends(get_current_user)):
     try:
@@ -28,7 +26,6 @@ def get_my_constellations(current_user: dict = Depends(get_current_user)):
         return fetch_all(query, [current_user["UserId"]])
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.post("")
 def create_constellation(payload: ConstellationCreate, current_user: dict = Depends(get_current_user)):
@@ -64,7 +61,6 @@ def create_constellation(payload: ConstellationCreate, current_user: dict = Depe
             }
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.get("/{board_id}")
 def get_constellation_detail(board_id: int):
@@ -143,7 +139,6 @@ def get_constellation_detail(board_id: int):
         raise
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-
 
 @router.get("/{board_id}/galaxy")
 def get_constellation_galaxy(board_id: int):

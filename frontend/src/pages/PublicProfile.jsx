@@ -37,7 +37,7 @@ export default function PublicProfile() {
 
   useEffect(() => {
     if (!userId) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    
     setLoading(true);
     Promise.all([
       getPublicProfile(userId),

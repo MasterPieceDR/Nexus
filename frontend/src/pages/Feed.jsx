@@ -64,7 +64,7 @@ function DepthGalleryHero({ apiPins = [] }) {
       const img = new Image();
       img.src = item.src;
     });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); 
 
   const goTo = useCallback((idx) => {
     const next = ((idx % n) + n) % n;
@@ -503,7 +503,7 @@ export default function Feed() {
           )}
         </div>
 
-        {/* Título de contexto */}
+        {}
         {(query || selectedCategoryId) && (
           <div className="pt-10 px-4 sm:px-6 lg:px-8 max-w-[2000px] mx-auto mb-2">
             {query
@@ -513,7 +513,7 @@ export default function Feed() {
           </div>
         )}
 
-        {/* Grid */}
+        {}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-3">
             <Loader2 className="w-8 h-8 text-[#2563EB] animate-spin" />

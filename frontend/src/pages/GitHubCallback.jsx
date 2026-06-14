@@ -26,7 +26,7 @@ export default function GitHubCallback() {
         sessionStorage.removeItem(PROCESSED_KEY);
         setError(err.message || 'Error al autenticar con GitHub.');
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  
   }, []);
 
   if (error) {

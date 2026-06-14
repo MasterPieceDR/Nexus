@@ -43,7 +43,7 @@ export default function PinCard({ pin, onClick, onUpdatePin }) {
     try {
       const res = await likePin(pin.id);
       if (onUpdatePin) onUpdatePin({ ...pin, reactionsCount: res.liked ? (pin.reactionsCount || 0) + 1 : Math.max((pin.reactionsCount || 0) - 1, 0), isLiked: res.liked });
-    } catch { /* best effort */ }
+    } catch {  }
   };
 
   const handleSave = async (e) => {
@@ -52,7 +52,7 @@ export default function PinCard({ pin, onClick, onUpdatePin }) {
     try {
       const res = await savePin(pin.id);
       if (onUpdatePin) onUpdatePin({ ...pin, savesCount: res.saved ? (pin.savesCount || 0) + 1 : Math.max((pin.savesCount || 0) - 1, 0), isSaved: res.saved });
-    } catch { /* best effort */ }
+    } catch {  }
   };
 
   return (

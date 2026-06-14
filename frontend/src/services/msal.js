@@ -19,14 +19,14 @@ let _initialized = false;
 export async function initializeMsal() {
   if (!_initialized) {
     await msalInstance.initialize();
-    // Consume cualquier respuesta de redirect pendiente para limpiar el estado
+    
     await msalInstance.handleRedirectPromise().catch(() => {});
     _initialized = true;
   }
 }
 
 export function clearMsalInteraction() {
-  // Elimina solo las claves de interacción de MSAL que bloquean nuevos popups
+  
   Object.keys(sessionStorage)
     .filter((k) => k.includes("msal") || k.includes("interaction"))
     .forEach((k) => sessionStorage.removeItem(k));

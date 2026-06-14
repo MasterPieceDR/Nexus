@@ -81,7 +81,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (!user) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    
     setLoading(true);
     Promise.all([getUserPins(), getSavedPins(), getLikedPins()])
       .then(([pins, saved, liked]) => {
@@ -241,7 +241,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Company card */}
+        {}
         {profile?.IsCompany && profile?.CompanyName && (
           <div className="mb-8 p-5 rounded-2xl bg-white/70 dark:bg-white/5 border border-[#BFDBFE] dark:border-white/10 max-w-2xl shadow-sm">
             <div className="flex items-center gap-2 mb-3">

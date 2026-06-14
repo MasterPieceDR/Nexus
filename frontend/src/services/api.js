@@ -1,10 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Cliente API centralizado de Nexus
-// - Base URL configurable por entorno (VITE_API_URL) con fallback local
-// - Token JWT automático, manejo de 401/403/404/5xx, timeout y retry controlado
-// - Mensajes de error amigables en español
-// ─────────────────────────────────────────────────────────────────────────────
-
 const isLocal = window.location.hostname === 'localhost' ||
                 window.location.hostname === '127.0.0.1' ||
                 window.location.hostname.startsWith('192.168.') ||
@@ -75,7 +68,6 @@ export function clearSession() {
   localStorage.removeItem('nexus_user');
 }
 
-/** Convierte rutas relativas del backend (/static/...) en URLs absolutas y normaliza 127.0.0.1 → localhost. */
 export function resolveMediaUrl(url) {
   if (!url) return '';
   const full = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
@@ -84,7 +76,6 @@ export function resolveMediaUrl(url) {
   );
 }
 
-/** Sirve imágenes de usuario a través del endpoint thumb con el ancho indicado (default 600 para feeds). */
 export function resolveThumbUrl(url, w = 600) {
   const resolved = resolveMediaUrl(url);
   if (!resolved) return '';
@@ -110,13 +101,6 @@ async function parseBody(response) {
   }
 }
 
-/**
- * Llamada central a la API.
- * @param {string} endpoint - ruta relativa, ej. '/pins/feed'
- * @param {object} options - { method, body, headers, auth, timeout, retries, rawBody }
- * @returns {Promise<any>} cuerpo JSON parseado
- * @throws {ApiError} con mensaje amigable
- */
 export async function apiFetch(endpoint, options = {}) {
   const {
     method = 'GET',
@@ -196,7 +180,6 @@ export async function apiFetch(endpoint, options = {}) {
   throw lastError;
 }
 
-// Compatibilidad con código existente que espera un Response "crudo"
 export const fetchWithAuth = async (endpoint, options = {}) => {
   const token = getToken();
   const headers = {
@@ -212,8 +195,6 @@ export const fetchWithAuth = async (endpoint, options = {}) => {
   }
   return response;
 };
-
-// ── Autenticación ─────────────────────────────────────────────────────────────
 
 export const login = async (email, password) => {
   const data = await apiFetch('/auth/login', {
@@ -282,8 +263,6 @@ export const ldapLogin = async ({ username, password, domain }) => {
   return data;
 };
 
-// ── Feed / Pins ───────────────────────────────────────────────────────────────
-
 export const getFeed = (page = 1, size = 30) =>
   apiFetch(`/pins/feed?page=${page}&size=${size}`);
 
@@ -320,8 +299,6 @@ export const getPinComments = (pinId) => apiFetch(`/pins/${pinId}/comments`);
 export const createPinComment = (pinId, content) =>
   apiFetch(`/pins/${pinId}/comments`, { method: 'POST', body: { content } });
 
-// ── Subidas / Media ───────────────────────────────────────────────────────────
-
 export const getUploadUrl = (filename, contentType) =>
   apiFetch('/uploads/presigned-url', {
     method: 'POST',
@@ -336,8 +313,6 @@ export const uploadLocal = (key, file) =>
     auth: false,
     timeout: 60000,
   });
-
-// ── Usuario ───────────────────────────────────────────────────────────────────
 
 export const getCategories = () => apiFetch('/categories');
 
@@ -382,8 +357,6 @@ export const uploadAvatar = async (file) => {
   return res.json();
 };
 
-// ── Reportes / Moderación ─────────────────────────────────────────────────────
-
 export const reportContent = (entityType, entityId, reason, details = '') =>
   apiFetch('/reports', {
     method: 'POST',
@@ -398,8 +371,6 @@ export const verifyPin = (pinId, verifiedStatus) =>
 
 export const updatePinStatus = (pinId, status) =>
   apiFetch(`/pins/${pinId}/status`, { method: 'PATCH', body: { status } });
-
-// ── Panel Admin ───────────────────────────────────────────────────────────────
 
 export const adminGetMetrics = () => apiFetch('/admin/metrics');
 
@@ -437,7 +408,6 @@ export const adminResolveReport = (reportId, actionTaken, notes = '') =>
 export const deletePin = (pinId) =>
   apiFetch(`/pins/${pinId}`, { method: 'DELETE' });
 
-/** Rol del usuario actual almacenado en sesión (1=SuperAdmin, 2=Admin, 3=Moderador). */
 export function isModeratorRole() {
   const user = getStoredUser();
   return user && [1, 2, 3].includes(user.RoleId);

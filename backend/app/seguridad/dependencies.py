@@ -2,7 +2,6 @@ from fastapi import Depends, Header, HTTPException, status
 from ..db.connection import fetch_one
 from .auth import decode_access_token
 
-# Roles del sistema (sec.Roles)
 ROLE_SUPER_ADMIN = 1
 ROLE_ADMIN = 2
 ROLE_MODERATOR = 3

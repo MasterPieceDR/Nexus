@@ -7,8 +7,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
 def _base_template(header_title: str, header_subtitle: str, body_html: str) -> str:
     return f"""<!DOCTYPE html>
 <html lang="es">
@@ -46,7 +44,6 @@ def _base_template(header_title: str, header_subtitle: str, body_html: str) -> s
 </body>
 </html>"""
 
-
 def _send(to_email: str, subject: str, html: str):
     """Envía un correo vía SMTP. Lanza excepción si falla."""
     msg = MIMEMultipart("alternative")
@@ -62,7 +59,6 @@ def _send(to_email: str, subject: str, html: str):
     server.sendmail(settings.SMTP_USER, to_email, msg.as_string())
     server.quit()
 
-
 def _log_email(user_id, email_type: str, to_email: str, subject: str, status: str, error: str = None):
     try:
         execute_query(
@@ -71,9 +67,6 @@ def _log_email(user_id, email_type: str, to_email: str, subject: str, status: st
         )
     except Exception as e:
         logger.error("EmailAuditLog insert failed: %s", e)
-
-
-# ── Bienvenida ────────────────────────────────────────────────────────────────
 
 def send_welcome_email(to_email: str, user_name: str, username: str = ""):
     if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
@@ -117,9 +110,6 @@ def send_welcome_email(to_email: str, user_name: str, username: str = ""):
         _send(to_email, subject, html)
     except Exception as e:
         logger.error("send_welcome_email error: %s", e)
-
-
-# ── Alerta de inicio de sesión ────────────────────────────────────────────────
 
 def send_login_alert(user_id: int, to_email: str, user_name: str, ip_address: str, user_agent: str, provider: str = "LOCAL"):
     if not settings.SMTP_USER or not settings.SMTP_PASSWORD:

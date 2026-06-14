@@ -16,7 +16,7 @@ export default function UserSearchModal({ onClose }) {
 
   useEffect(() => {
     clearTimeout(timer.current);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    
     if (query.trim().length < 2) { setResults([]); setSearched(false); return; }
     setLoading(true);
     timer.current = setTimeout(async () => {
