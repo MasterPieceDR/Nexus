@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+  body {
+    @apply bg-[#EFF6FF] text-[#0F172A] dark:bg-[#020B18] dark:text-[#F0F8FF] antialiased min-h-screen selection:bg-[#2563EB] selection:text-white;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@layer components {
+  .glass-nav {
+    @apply bg-[#020B18]/80 backdrop-blur-md border-b border-[#F0F8FF]/10 sticky top-0 z-50;
+  }
+
+/* Galaxy Animation */
+@keyframes space {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+.bg-galaxy {
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.07), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.07), transparent 25%);
+  background-color: #EFF6FF;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-galaxy::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%; right: -50%; bottom: -50%;
+  width: 200%; height: 200%;
+  background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat top center;
+  animation: space 120s linear infinite;
+  opacity: 0.4;
+  z-index: 1;
+}
+
+.dark .bg-galaxy {
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.10), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.10), transparent 25%);
+  background-color: #041020;
+}
+.dark .bg-galaxy::before {
+  opacity: 0.7;
+}
+
+  .nexus-btn {
+    @apply bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-full font-medium transition-all duration-300;
+  }
+
+  .nexus-input {
+    @apply bg-[#F0F8FF]/5 border border-[#F0F8FF]/10 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-[#2563EB]/50 focus:ring-1 focus:ring-[#2563EB]/50 transition-all text-[#F0F8FF] placeholder-[#F0F8FF]/40;
+  }
+}
+
+.masonry-grid {
+  column-count: 1;
+  column-gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .masonry-grid {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .masonry-grid {
+    column-count: 3;
+  }
+}
+
+@media (min-width: 1280px) {
+  .masonry-grid {
+    column-count: 4;
+  }
+}
+
+@media (min-width: 1536px) {
+  .masonry-grid {
+    column-count: 5;
+  }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+}
+
+/* Utilities to hide scrollbars */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/* Marquee animation for landing */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* Fade-in on scroll */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.7s ease forwards;
+}
+
+@keyframes nexus-float {
+  0%, 100% { transform: translateY(0px); }
+  40%       { transform: translateY(-14px); }
+  70%       { transform: translateY(7px); }
+}
+
+@keyframes nexus-breathe {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.06); }
+}
+
+/* Custom Scrollbar Styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #2563EB;
+  border-radius: 4px;
+}
+html.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: #020B18;
+}

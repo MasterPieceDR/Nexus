@@ -14,21 +14,27 @@ class ReportCreate(BaseModel):
 @router.post("")
 def create_report(payload: ReportCreate, user: dict = Depends(get_current_user)):
     try:
-        query = """
-        EXEC moderation.usp_ReportEntity 
-            @ReporterUserId = ?, 
-            @EntityType = ?, 
-            @EntityId = ?, 
-            @Reason = ?, 
-            @Details = ?
-        """
-        execute_query(query, [
-            user["UserId"], 
-            payload.entity_type, 
-            payload.entity_id, 
-            payload.reason.strip(),
-            payload.details or ""
-        ])
-        return {"status": "success", "message": "Report submitted successfully"}
+        from ..db.connection import fetch_one
+        result = fetch_one(
+            """
+            DECLARE @newId BIGINT;
+            EXEC moderation.usp_ReportEntity
+                @ReporterUserId = ?,
+                @EntityType = ?,
+                @EntityId = ?,
+                @Reason = ?,
+                @Details = ?,
+                @NewReportId = @newId OUTPUT;
+            SELECT @newId AS report_id;
+            """,
+            [
+                user["UserId"],
+                payload.entity_type,
+                payload.entity_id,
+                payload.reason.strip(),
+                payload.details or "",
+            ]
+        )
+        return {"status": "success", "message": "Report submitted successfully", "report_id": result["report_id"] if result else None}
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))

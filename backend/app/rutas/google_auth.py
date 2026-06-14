@@ -1,10 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Request
 from pydantic import BaseModel
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from ..db.connection import fetch_one
 from ..seguridad.auth import create_access_token
-from ..servicios.email_service import send_welcome_email
+from ..services.email_service import send_welcome_email, send_login_alert
 from ..config import settings
 
 router = APIRouter(prefix="/api/auth/google", tags=["google_auth"])
@@ -13,7 +13,7 @@ class GoogleToken(BaseModel):
     id_token: str
 
 @router.post("")
-def google_login(payload: GoogleToken, background_tasks: BackgroundTasks):
+def google_login(payload: GoogleToken, request: Request, background_tasks: BackgroundTasks):
     try:
         # Validate Google token
         idinfo = id_token.verify_oauth2_token(
@@ -25,38 +25,38 @@ def google_login(payload: GoogleToken, background_tasks: BackgroundTasks):
         google_sub = idinfo["sub"]
         avatar_url = idinfo.get("picture", "")
 
+        ip_address = request.client.host if request.client else "Unknown"
+        user_agent = request.headers.get("user-agent", "Unknown")
+
         # Check if user already exists
         existing_user = fetch_one("SELECT UserId FROM sec.Users WHERE Email = ?", [email])
         is_new_user = existing_user is None
 
         query = """
-        DECLARE @UserId INT;
-        DECLARE @DisplayName NVARCHAR(100);
-        DECLARE @Email NVARCHAR(255);
-        DECLARE @Username NVARCHAR(50);
-        DECLARE @RoleId INT;
-        DECLARE @RoleName NVARCHAR(50);
+        DECLARE @UserId BIGINT;
 
         EXEC sec.usp_LoginWithGoogle
-            @ProviderKey = ?,
+            @GoogleSub = ?,
             @Email = ?,
+            @EmailVerified = 1,
             @DisplayName = ?,
             @AvatarUrl = ?,
-            @UserId = @UserId OUTPUT,
-            @OutDisplayName = @DisplayName OUTPUT,
-            @OutEmail = @Email OUTPUT,
-            @OutUsername = @Username OUTPUT,
-            @OutRoleId = @RoleId OUTPUT,
-            @OutRoleName = @RoleName OUTPUT;
+            @IpAddress = ?,
+            @UserAgent = ?,
+            @UserId = @UserId OUTPUT;
             
         SELECT 
-            @UserId as UserId, 
-            @DisplayName as DisplayName, 
-            @Email as Email, 
-            @Username as Username, 
-            @RoleId as RoleId, 
-            @RoleName as RoleName,
-            ? as AvatarUrl;
+            u.UserId, 
+            u.DisplayName, 
+            u.Email, 
+            u.Username, 
+            u.RoleId, 
+            r.RoleName,
+            p.AvatarUrl
+        FROM sec.Users u
+        JOIN sec.Roles r ON u.RoleId = r.RoleId
+        LEFT JOIN sec.UserProfiles p ON u.UserId = p.UserId
+        WHERE u.UserId = @UserId;
         """
         
         user_info = fetch_one(query, [
@@ -64,14 +64,30 @@ def google_login(payload: GoogleToken, background_tasks: BackgroundTasks):
             email, 
             display_name, 
             avatar_url,
-            avatar_url
+            ip_address,
+            user_agent
         ])
 
         if not user_info or not user_info.get("UserId"):
             raise HTTPException(status_code=400, detail="Could not create or fetch user from Google login")
 
         if is_new_user:
-            background_tasks.add_task(send_welcome_email, user_info["Email"], user_info["DisplayName"])
+            background_tasks.add_task(
+                send_welcome_email,
+                user_info["Email"],
+                user_info["DisplayName"],
+                user_info.get("Username", ""),
+            )
+        else:
+            background_tasks.add_task(
+                send_login_alert,
+                user_info["UserId"],
+                user_info["Email"],
+                user_info["DisplayName"],
+                ip_address,
+                user_agent,
+                "GOOGLE",
+            )
 
         access_token = create_access_token(str(user_info["UserId"]))
         

@@ -1,0 +1,15 @@
+{
+  "name": "nexus-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nexus — Plataforma Visual de Conocimiento (frontend React + backend FastAPI)",
+  "scripts": {
+    "prepare": "husky",
+    "lint": "npm --prefix frontend run lint",
+    "build": "npm --prefix frontend run build",
+    "validate": "npm run lint && npm run build"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

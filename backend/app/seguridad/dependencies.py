@@ -2,6 +2,19 @@ from fastapi import Depends, Header, HTTPException, status
 from ..db.connection import fetch_one
 from .auth import decode_access_token
 
+# Roles del sistema (sec.Roles)
+ROLE_SUPER_ADMIN = 1
+ROLE_ADMIN = 2
+ROLE_MODERATOR = 3
+ADMIN_ROLES = (ROLE_SUPER_ADMIN, ROLE_ADMIN)
+MODERATOR_ROLES = (ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_MODERATOR)
+
+_USER_QUERY = """
+SELECT UserId, DisplayName, Username, Email, RoleId, PhoneNumber
+FROM sec.Users
+WHERE UserId = ? AND DeletedAt IS NULL
+"""
+
 def extract_token(authorization: str | None) -> str | None:
     if not authorization:
         return None
@@ -17,7 +30,7 @@ def get_current_user(authorization: str | None = Header(default=None)) -> dict:
     if not subject:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sesión inválida")
 
-    user = fetch_one("SELECT UserId, DisplayName, Email, RoleId FROM sec.Users WHERE UserId = ? AND DeletedAt IS NULL", [int(subject)])
+    user = fetch_one(_USER_QUERY, [int(subject)])
 
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario no disponible")
@@ -31,9 +44,17 @@ def get_optional_user(authorization: str | None = Header(default=None)) -> dict 
     if not subject:
         return None
 
-    return fetch_one("SELECT UserId, DisplayName, Email, RoleId FROM sec.Users WHERE UserId = ? AND IsActive = 1", [int(subject)])
+    try:
+        return fetch_one(_USER_QUERY, [int(subject)])
+    except Exception:
+        return None
 
 def require_admin(user: dict = Depends(get_current_user)) -> dict:
-    if user["RoleId"] != 1:  # Assuming 1 is ADMIN
+    if user["RoleId"] not in ADMIN_ROLES:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Permiso insuficiente")
+    return user
+
+def require_moderator(user: dict = Depends(get_current_user)) -> dict:
+    if user["RoleId"] not in MODERATOR_ROLES:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Permiso insuficiente")
     return user

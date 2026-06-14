@@ -18,16 +18,26 @@ class Settings(BaseSettings):
 
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 180
+    JWT_EXPIRE_MINUTES: int = 1440
 
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
 
+    GITHUB_CLIENT_ID: str = ""
+    GITHUB_CLIENT_SECRET: str = ""
+
+    # ── Cloud / almacenamiento multimedia ────────────────────────────────────
+    # CLOUD_PROVIDER: LOCAL | S3 | CLOUDINARY
+    CLOUD_PROVIDER: str = "LOCAL"
     AWS_REGION: str = "us-east-1"
     AWS_MEDIA_BUCKET: str = "nexus-dev-media"
     AWS_APP_BUCKET: str = "nexus-dev-app"
+    AWS_S3_BUCKET: str = ""
     AWS_PRESIGN_EXPIRATION: int = 900
-    
+    CLOUDINARY_CLOUD_NAME: str = ""
+    CLOUDINARY_API_KEY: str = ""
+    CLOUDINARY_API_SECRET: str = ""
+
     AUTO_APPROVE_POSTS: str = "false"
     MAX_UPLOAD_SIZE_MB: int = 15
 
@@ -35,6 +45,20 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
+
+    # ── Moderación IA/OCR ─────────────────────────────────────────────────────
+    # MODERATION_PROVIDER: MOCK | GOOGLE_VISION | AWS_REKOGNITION | HF_NSFW
+    MODERATION_PROVIDER: str = "MOCK"
+    HF_API_TOKEN: str = ""
+    HF_NSFW_MODEL: str = "Falconsai/nsfw_image_detection"
+
+    # ── WhatsApp ──────────────────────────────────────────────────────────────
+    # WHATSAPP_PROVIDER: MOCK | TWILIO
+    WHATSAPP_PROVIDER: str = "MOCK"
+    TWILIO_ACCOUNT_SID: str = ""
+    TWILIO_AUTH_TOKEN: str = ""
+    TWILIO_WHATSAPP_FROM: str = ""
+    ADMIN_WHATSAPP_NUMBER: str = ""
 
     class Config:
         env_file = ".env"

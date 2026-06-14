@@ -187,6 +187,93 @@ CATEGORIES = [
     }
 ]
 
+CATEGORY_IMAGES = {
+    "innovacion": [
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop"
+    ],
+    "cloud-computing": [
+        "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1597852074816-d933c4d283f1?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop"
+    ],
+    "bases-de-datos": [
+        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800&auto=format&fit=crop"
+    ],
+    "ciberseguridad": [
+        "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1601597111158-2fceff270190?q=80&w=800&auto=format&fit=crop"
+    ],
+    "inteligencia-artificial": [
+        "https://images.unsplash.com/photo-1677442136019-21780efad99a?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1527474305487-b87b222841cc?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1507146426996-ef05306b995a?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop"
+    ],
+    "diseno-ui-ux": [
+        "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1541462608141-2ff01dd914e0?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop"
+    ],
+    "programacion-web": [
+        "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop"
+    ],
+    "devops": [
+        "https://images.unsplash.com/photo-1607799279861-4dd421887fb3?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1618401471353-b98aedd07871?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1597852074816-d933c4d283f1?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?q=80&w=800&auto=format&fit=crop"
+    ],
+    "redes": [
+        "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1597852074816-d933c4d283f1?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800&auto=format&fit=crop"
+    ],
+    "prototipos": [
+        "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1541462608141-2ff01dd914e0?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop"
+    ],
+    "robotica-iot": [
+        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1531747118685-ca8fa6e08806?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1563770660941-20978e870e26?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=800&auto=format&fit=crop"
+    ],
+    "sostenibilidad-tech": [
+        "https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1466611653911-95081537e5b7?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop"
+    ]
+}
+
 TITLE_TEMPLATES = [
     "Nodo de {category} para explorar nuevas ideas",
     "Referencia visual sobre {category}",
@@ -253,11 +340,9 @@ def download_binary(url, output_path):
     from io import BytesIO
     from PIL import Image
     _headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Referer": "https://www.google.com/"
+        "User-Agent": "NexusLocalDataset/1.0 (Contact: diego@example.com)",
+        "Accept": "image/webp,image/apng,image/*,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9"
     }
     response = requests.get(url, timeout=30, headers=_headers)
     response.raise_for_status()
@@ -488,37 +573,60 @@ def collect_dataset():
         category_dir = BACKEND_STATIC_DIR / category["slug"]
         category_dir.mkdir(parents=True, exist_ok=True)
         category_count = 0
+        
+        urls = CATEGORY_IMAGES.get(category["slug"], [])
 
         while category_count < category_target:
             global_index = len(records) + 1
-            seed = f"{category['slug']}-{global_index}"
-            image_url = f"https://picsum.photos/seed/{seed}/800/1200"
+            image_url = urls[category_count % len(urls)]
 
             ext = ".webp"
             filename = f"{category['slug']}-{global_index:03d}{ext}"
             local_path = category_dir / filename
 
             try:
+                print(f"Descargando ({category_count + 1}/{category_target}) para {category['name']} desde Unsplash CDN...")
                 download_binary(image_url, local_path)
+                
+                item = {
+                    "source": "unsplash_cdn",
+                    "source_id": f"{category['slug']}-{global_index}",
+                    "image_url": image_url,
+                    "page_url": "https://unsplash.com",
+                    "author": "Unsplash Contributor",
+                    "author_url": "https://unsplash.com",
+                    "license": "Unsplash License"
+                }
+
+                record = build_record(category, item, global_index, local_path)
+                records.append(record)
+                category_count += 1
+                print(f"{len(records):03d}/{TARGET_IMAGES} {category['slug']} <- {item['source']}")
+                time.sleep(REQUEST_DELAY)
             except Exception as error:
                 print(f"Error descargando {image_url}: {error}")
-                continue
-
-            item = {
-                "source": "picsum",
-                "source_id": seed,
-                "image_url": image_url,
-                "page_url": image_url,
-                "author": "Picsum Photos",
-                "author_url": "https://picsum.photos",
-                "license": "Free to use"
-            }
-
-            record = build_record(category, item, global_index, local_path)
-            records.append(record)
-            category_count += 1
-
-            print(f"{len(records):03d}/{TARGET_IMAGES} {category['slug']} <- {item['source']}")
+                try:
+                    seed = f"{category['slug']}-{global_index}"
+                    fallback_url = f"https://picsum.photos/seed/{seed}/800/1200"
+                    print(f"Intentando fallback picsum para {category['name']}...")
+                    download_binary(fallback_url, local_path)
+                    item = {
+                        "source": "picsum_fallback",
+                        "source_id": seed,
+                        "image_url": fallback_url,
+                        "page_url": fallback_url,
+                        "author": "Picsum Photos",
+                        "author_url": "https://picsum.photos",
+                        "license": "Free to use"
+                    }
+                    record = build_record(category, item, global_index, local_path)
+                    records.append(record)
+                    category_count += 1
+                    print(f"{len(records):03d}/{TARGET_IMAGES} {category['slug']} <- {item['source']}")
+                    time.sleep(REQUEST_DELAY)
+                except Exception as fb_error:
+                    print(f"Error en fallback: {fb_error}")
+                    continue
 
     return records
 
