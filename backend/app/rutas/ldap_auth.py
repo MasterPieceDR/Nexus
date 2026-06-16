@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from ..db.connection import fetch_one, execute_query
 from ..seguridad.auth import create_access_token
 from ..services.email_service import send_login_alert
+from ..config import settings
 from ldap3 import Server, Connection, ALL, NTLM
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -17,7 +18,8 @@ def ldap_login(payload: LdapLoginRequest, request: Request, background_tasks: Ba
     ip_address = request.client.host if request.client else "Unknown"
     user_agent = request.headers.get("user-agent", "Unknown")
 
-    server_uri = f"ldap://{payload.domain}"
+    ldap_host = settings.LDAP_SERVER if settings.LDAP_SERVER else payload.domain
+    server_uri = f"ldap://{ldap_host}"
     user_principal = f"{payload.username}@{payload.domain}"
 
     try:

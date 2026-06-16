@@ -46,6 +46,9 @@ class Settings(BaseSettings):
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
 
+    LDAP_SERVER: str = ""
+    LDAP_DOMAIN: str = "NEXUS.LAB"
+
     MODERATION_PROVIDER: str = "MOCK"
     HF_API_TOKEN: str = ""
     HF_NSFW_MODEL: str = "Falconsai/nsfw_image_detection"

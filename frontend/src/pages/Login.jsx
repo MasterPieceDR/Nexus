@@ -149,7 +149,7 @@ export default function Login() {
   const [activeTab, setActiveTab] = useState('standard');
   const [ldapUsername, setLdapUsername] = useState('');
   const [ldapPassword, setLdapPassword] = useState('');
-  const [ldapDomain, setLdapDomain] = useState('nexus.local');
+  const [ldapDomain, setLdapDomain] = useState('NEXUS.LAB');
   const [ghPrevUser, setGhPrevUser] = useState(() => {
     try {
       const prev = localStorage.getItem('nexus_prev_gh_user');
