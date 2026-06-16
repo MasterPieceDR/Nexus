@@ -4,11 +4,12 @@ from app.config import settings
 def get_connection():
     connection_string = (
         f"DRIVER={{{settings.DB_DRIVER}}};"
-        f"SERVER={settings.DB_SERVER};"
+        f"SERVER={settings.DB_SERVER},{settings.DB_PORT};"
         f"DATABASE={settings.DB_DATABASE};"
-        f"Trusted_Connection=yes;"
+        f"UID={settings.DB_USER};"
+        f"PWD={settings.DB_PASSWORD};"
         f"TrustServerCertificate={settings.DB_TRUST_CERTIFICATE};"
-        f"Encrypt=yes;"
+        f"Encrypt={settings.DB_ENCRYPT};"
     )
     return pyodbc.connect(connection_string)
 
