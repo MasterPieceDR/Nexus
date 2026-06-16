@@ -95,13 +95,31 @@ def _moderate_google_vision(image_path: str) -> dict:
     return _standard_result("GOOGLE_VISION", score, labels, ocr_text,
                             is_explicit, is_illegal, is_safe_for_minors, status, reason)
 
+def _to_jpeg_bytes(image_path: str) -> bytes:
+    """Convierte cualquier imagen a JPEG (Rekognition no soporta WebP/AVIF)."""
+    from PIL import Image
+    import io
+    img = Image.open(image_path)
+    if img.mode not in ("RGB", "RGBA"):
+        img = img.convert("RGB")
+    if img.mode == "RGBA":
+        bg = Image.new("RGB", img.size, (255, 255, 255))
+        bg.paste(img, mask=img.split()[3])
+        img = bg
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=90)
+    return buf.getvalue()
+
 def _moderate_aws_rekognition(image_path: str) -> dict:
     """AWS Rekognition: DetectModerationLabels + DetectText (OCR)."""
     import boto3
 
     client = boto3.client("rekognition", region_name=settings.AWS_REGION)
-    with open(image_path, "rb") as f:
-        image_bytes = f.read()
+    try:
+        image_bytes = _to_jpeg_bytes(image_path)
+    except Exception:
+        with open(image_path, "rb") as f:
+            image_bytes = f.read()
 
     mod = client.detect_moderation_labels(Image={"Bytes": image_bytes}, MinConfidence=40)
     text = client.detect_text(Image={"Bytes": image_bytes})
