@@ -1,0 +1,19 @@
+{
+  "name": "Nexus — Plataforma Visual de Conocimiento",
+  "short_name": "Nexus",
+  "description": "Red visual de conocimiento para descubrir, guardar y compartir ideas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f1a",
+  "theme_color": "#2563EB",
+  "lang": "es",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/purple_galaxy.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
