@@ -159,11 +159,15 @@ export default function Sidebar() {
   const { isSidebarCollapsed, toggleSidebar } = useSidebar();
   const isLoggedIn = !!localStorage.getItem('nexus_token');
 
+  const _normalizeNotifs = (data) =>
+    Array.isArray(data) ? data : (data?.items || data?.notifications || data?.data || []);
+
   useEffect(() => {
     if (!isLoggedIn) return;
     getUserNotifications().then(data => {
-      setNotifications(data);
-      setUnreadCount(data.filter(n => !n.isRead).length);
+      const notifs = _normalizeNotifs(data);
+      setNotifications(notifs);
+      setUnreadCount(notifs.filter(n => !n.isRead).length);
     }).catch(() => {});
   }, [isLoggedIn]);
 
@@ -171,8 +175,12 @@ export default function Sidebar() {
     setNotifOpen(true);
     if (notifications.length === 0) {
       setNotifLoading(true);
-      try { const data = await getUserNotifications(); setNotifications(data); setUnreadCount(0); }
-      catch {  } finally { setNotifLoading(false); }
+      try {
+        const data = await getUserNotifications();
+        const notifs = _normalizeNotifs(data);
+        setNotifications(notifs);
+        setUnreadCount(0);
+      } catch {  } finally { setNotifLoading(false); }
     } else { setUnreadCount(0); }
   };
 

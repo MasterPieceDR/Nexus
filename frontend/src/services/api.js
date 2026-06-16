@@ -68,12 +68,22 @@ export function clearSession() {
   localStorage.removeItem('nexus_user');
 }
 
+let _redirecting401 = false;
+function _handle401Redirect() {
+  if (_redirecting401) return;
+  _redirecting401 = true;
+  setTimeout(() => { _redirecting401 = false; }, 3000);
+  if (!window.location.pathname.startsWith('/login')) {
+    window.location.replace('/login');
+  }
+}
+
 export function resolveMediaUrl(url) {
   if (!url) return '';
   const full = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
-  return full.replace(/^http:\/\/127\.0\.0\.1(:\d+)?/, (_m, port) =>
-    `http://localhost${port ?? ''}`
-  );
+  return full
+    .replace(/^https?:\/\/127\.0\.0\.1(:\d+)?/, BACKEND_URL)
+    .replace(/^https?:\/\/localhost(:\d+)?/, BACKEND_URL);
 }
 
 export function resolveThumbUrl(url, w = 600) {
@@ -81,7 +91,7 @@ export function resolveThumbUrl(url, w = 600) {
   if (!resolved) return '';
   if (resolved.includes('/static/uploads/images/') || resolved.includes('/static/uploads/avatars/') || resolved.includes('/static/seed/images/')) {
     const path = resolved.replace(/^https?:\/\/[^/]+\/static\//, '');
-    return `http://localhost:8000/api/media/thumb?path=${encodeURIComponent(path)}&w=${w}`;
+    return `${BACKEND_URL}/api/media/thumb?path=${encodeURIComponent(path)}&w=${w}`;
   }
   if (resolved.includes('/api/media/thumb?')) {
     const u = new URL(resolved);
@@ -139,9 +149,7 @@ export async function apiFetch(endpoint, options = {}) {
 
       if (response.status === 401 && auth) {
         clearSession();
-        if (!window.location.pathname.startsWith('/login')) {
-          window.location.href = '/login';
-        }
+        _handle401Redirect();
         throw new ApiError(FRIENDLY_BY_STATUS[401], 401);
       }
 
@@ -191,7 +199,7 @@ export const fetchWithAuth = async (endpoint, options = {}) => {
   const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
   if (response.status === 401) {
     clearSession();
-    window.location.href = '/login';
+    _handle401Redirect();
   }
   return response;
 };

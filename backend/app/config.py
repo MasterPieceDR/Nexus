@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_ID: str = ""
     GITHUB_CLIENT_SECRET: str = ""
 
+    BACKEND_PUBLIC_URL: str = "http://127.0.0.1:8000"
+
     CLOUD_PROVIDER: str = "LOCAL"
     AWS_REGION: str = "us-east-1"
     AWS_MEDIA_BUCKET: str = "nexus-dev-media"

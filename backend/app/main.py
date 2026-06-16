@@ -40,6 +40,8 @@ os.makedirs("static/uploads/videos", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(_StaticCacheMiddleware)
+_extra_origins = [o.strip() for o in settings.APP_ORIGINS.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -54,7 +56,8 @@ app.add_middleware(
         "http://localhost:5175",
         "http://127.0.0.1:5175",
         "http://localhost:4173",
-        "http://127.0.0.1:4173"
+        "http://127.0.0.1:4173",
+        *_extra_origins,
     ],
     allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=True,
@@ -113,6 +116,57 @@ def _run_migrations():
         """)
     except Exception as exc:
         logging.getLogger("nexus.migrations").error("Migración UserViolations falló: %s", exc)
+    try:
+        execute_query("""
+            IF NOT EXISTS (
+                SELECT 1 FROM sys.tables t
+                JOIN sys.schemas s ON t.schema_id = s.schema_id
+                WHERE s.name = 'audit' AND t.name = 'AuditLog'
+            )
+            BEGIN
+                CREATE TABLE audit.AuditLog (
+                    AuditId     BIGINT IDENTITY(1,1) PRIMARY KEY,
+                    EventTime   DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+                    ActorUserId BIGINT NULL,
+                    ActionName  NVARCHAR(100) NOT NULL,
+                    EntityName  NVARCHAR(100) NULL,
+                    EntityId    BIGINT NULL,
+                    OldData     NVARCHAR(MAX) NULL,
+                    NewData     NVARCHAR(MAX) NULL,
+                    IpAddress   NVARCHAR(80)  NULL,
+                    UserAgent   NVARCHAR(500) NULL
+                );
+                CREATE INDEX IX_AuditLog_EventTime ON audit.AuditLog (EventTime DESC);
+            END
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID(N'audit.AuditLog') AND name=N'IpAddress')
+                ALTER TABLE audit.AuditLog ADD IpAddress NVARCHAR(80) NULL;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID(N'audit.AuditLog') AND name=N'UserAgent')
+                ALTER TABLE audit.AuditLog ADD UserAgent NVARCHAR(500) NULL;
+        """)
+    except Exception as exc:
+        logging.getLogger("nexus.migrations").error("Migración AuditLog falló: %s", exc)
+    try:
+        execute_query("""
+            CREATE OR ALTER PROCEDURE audit.usp_WriteAuditLog
+                @ActorUserId BIGINT        = NULL,
+                @ActionName  NVARCHAR(100),
+                @EntityName  NVARCHAR(100) = NULL,
+                @EntityId    BIGINT        = NULL,
+                @OldData     NVARCHAR(MAX) = NULL,
+                @NewData     NVARCHAR(MAX) = NULL,
+                @IpAddress   NVARCHAR(80)  = NULL,
+                @UserAgent   NVARCHAR(500) = NULL
+            AS
+            BEGIN
+                SET NOCOUNT ON;
+                INSERT INTO audit.AuditLog
+                    (ActorUserId, ActionName, EntityName, EntityId, OldData, NewData, IpAddress, UserAgent)
+                VALUES
+                    (@ActorUserId, @ActionName, @EntityName, @EntityId, @OldData, @NewData, @IpAddress, @UserAgent);
+            END
+        """)
+    except Exception as exc:
+        logging.getLogger("nexus.migrations").error("Migración usp_WriteAuditLog falló: %s", exc)
 
 @app.get("/")
 def root():

@@ -74,11 +74,11 @@ function BrandPanel() {
           transition={{ duration: 0.65, delay: 0.1 }}
           className="mb-12"
         >
-          <h2 className="font-serif text-4xl xl:text-[2.75rem] font-black text-white leading-[1.15] mb-4">
+          <h2 className="font-serif text-4xl xl:text-[2.75rem] font-black text-white leading-[1.15] mb-4 overflow-visible">
             La red visual<br />
             del{' '}
             <span
-              className="text-transparent bg-clip-text"
+              className="text-transparent bg-clip-text inline-block pb-[3px]"
               style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA, #818CF8, #60A5FA)', backgroundSize: '200% 100%' }}
             >
               conocimiento

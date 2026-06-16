@@ -170,6 +170,57 @@ _PROVIDERS = {
     "HF_NSFW": _moderate_hf_nsfw,
 }
 
+_COMMENT_BLACKLIST = [
+    "puta", "puto", "mierda", "coño", "joder", "hostia", "cabrón", "cabrona",
+    "imbécil", "idiota", "estúpido", "estúpida", "gilipollas", "maricón",
+    "maricona", "zorra", "hijueputa", "hijueputa", "culero", "pendejo",
+    "pendeja", "chingada", "verga", "follar", "porno", "prostituta",
+    "fuck", "shit", "bitch", "nigger", "faggot", "cunt", "whore",
+    "asshole", "bastard", "motherfucker", "penis", "vagina", "porn",
+    "rape", "kill yourself", "kys", "suicid",
+]
+
+def _check_keyword_blacklist(text: str):
+    import re
+    lower = text.lower()
+    for word in _COMMENT_BLACKLIST:
+        pattern = r'\b' + re.escape(word) + r'\b'
+        if re.search(pattern, lower):
+            return True, "El comentario contiene lenguaje inapropiado y no puede publicarse."
+    return False, ""
+
+def _moderate_comment_comprehend(text: str) -> dict:
+    import boto3
+    client = boto3.client("comprehend", region_name=settings.AWS_REGION)
+    try:
+        response = client.detect_toxic_content(
+            TextSegments=[{"Text": text[:5000]}],
+            LanguageCode="es",
+        )
+        results = response.get("ResultList", [])
+        if not results:
+            return {"status": "APPROVED", "reason": "Comentario aceptado"}
+        labels = results[0].get("Labels", [])
+        toxicity_score = max((l["Score"] for l in labels), default=0.0)
+        if toxicity_score >= 0.75:
+            return {"status": "BLOCKED", "reason": "Comentario inapropiado detectado por IA."}
+        return {"status": "APPROVED", "reason": "Comentario aceptado"}
+    except Exception as exc:
+        logger.warning("Comprehend no disponible, solo filtro de palabras: %s", exc)
+        return {"status": "APPROVED", "reason": "Comentario aceptado"}
+
+def moderate_comment(text: str) -> dict:
+    """Filtra comentarios inapropiados. Primera línea: lista de palabras; segunda: AWS Comprehend."""
+    if not text or not text.strip():
+        return {"status": "BLOCKED", "reason": "El comentario no puede estar vacío."}
+    blocked, reason = _check_keyword_blacklist(text)
+    if blocked:
+        return {"status": "BLOCKED", "reason": reason}
+    provider_name = (settings.MODERATION_PROVIDER or "MOCK").upper()
+    if provider_name == "AWS_REKOGNITION":
+        return _moderate_comment_comprehend(text)
+    return {"status": "APPROVED", "reason": "Comentario aceptado"}
+
 def moderate_image(image_path: str, pin_id: Optional[int] = None,
                    media_id: Optional[int] = None) -> dict:
     """Ejecuta la moderación con el proveedor configurado y persiste el resultado.

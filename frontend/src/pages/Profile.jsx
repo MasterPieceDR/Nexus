@@ -85,6 +85,7 @@ export default function Profile() {
     setLoading(true);
     Promise.all([getUserPins(), getSavedPins(), getLikedPins()])
       .then(([pins, saved, liked]) => {
+        const norm = (d) => Array.isArray(d) ? d : (d?.items ?? d?.data ?? d?.pins ?? d?.results ?? []);
         const mapPin = (item, extra = {}) => ({
           id: item.PinId,
           title: item.Title,
@@ -104,9 +105,9 @@ export default function Profile() {
           publishedAt: item.PublishedAt || item.CreatedAt,
           sourceUrl: item.SourceUrl,
         });
-        setMyPins(pins.map(p => mapPin(p, { owner: user.DisplayName || user.Username || 'Tú' })));
-        setSavedPins(saved.map(p => mapPin(p, { isSaved: true })));
-        setLikedPins(liked.map(p => mapPin(p)));
+        setMyPins(norm(pins).map(p => mapPin(p, { owner: user.DisplayName || user.Username || 'Tú' })));
+        setSavedPins(norm(saved).map(p => mapPin(p, { isSaved: true })));
+        setLikedPins(norm(liked).map(p => mapPin(p)));
       })
       .catch(console.error)
       .finally(() => setLoading(false));

@@ -55,9 +55,9 @@ function BrandPanel() {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.62 }}
           className="mb-10">
-          <h2 className="font-serif text-4xl xl:text-[2.6rem] font-black text-white leading-[1.15] mb-4">
+          <h2 className="font-serif text-4xl xl:text-[2.6rem] font-black text-white leading-[1.15] mb-4 overflow-visible">
             Únete al nexo<br />del{' '}
-            <span className="text-transparent bg-clip-text"
+            <span className="text-transparent bg-clip-text inline-block pb-[3px]"
               style={{ backgroundImage: 'linear-gradient(90deg, #60A5FA, #818CF8)' }}>
               conocimiento
             </span>

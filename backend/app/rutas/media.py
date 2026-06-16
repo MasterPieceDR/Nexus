@@ -106,7 +106,7 @@ def upload_local_media(file: UploadFile = File(...), current_user: dict = Depend
         with full_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-    media_url = f"http://127.0.0.1:8000/static/{relative_path.as_posix()}"
+    media_url = f"/static/{relative_path.as_posix()}"
     object_key = relative_path.as_posix()
     media_kind = "IMAGE" if file.content_type.startswith("image") else "VIDEO"
 

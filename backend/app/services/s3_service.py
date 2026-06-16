@@ -34,9 +34,8 @@ def validate_content_type(content_type: str) -> None:
 def create_presigned_upload_url(user_id: int, filename: str, content_type: str) -> dict:
     validate_content_type(content_type)
     key = build_object_key(user_id, filename, content_type)
-    if settings.APP_ENV == "development":
-
-        upload_url = f"http://127.0.0.1:8000/uploads/local-upload?key={key}"
+    if settings.CLOUD_PROVIDER == "LOCAL":
+        upload_url = f"{settings.BACKEND_PUBLIC_URL}/api/uploads/local-upload?key={key}"
         return {
             "upload_url": upload_url,
             "s3_key": key,
@@ -61,10 +60,10 @@ def create_presigned_upload_url(user_id: int, filename: str, content_type: str) 
 def create_presigned_get_url(key: str | None) -> str | None:
     if not key:
         return None
-    if key.startswith("http"):
+    if key.startswith("http") or key.startswith("/"):
         return key
-    if settings.APP_ENV == "development":
-        return f"http://127.0.0.1:8000/static/{key}"
+    if settings.CLOUD_PROVIDER == "LOCAL":
+        return f"/static/{key}"
 
     return client.generate_presigned_url(
         "get_object",

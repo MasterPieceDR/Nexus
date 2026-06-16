@@ -182,8 +182,12 @@ class CommentCreatePayload(BaseModel):
 
 @router.post("/{pin_id}/comments")
 def create_pin_comment(pin_id: int, payload: CommentCreatePayload, user: dict = Depends(get_current_user)):
+    from app.services.moderation_service import moderate_comment
     if not payload.content.strip():
         raise HTTPException(status_code=400, detail="El comentario no puede estar vacío")
+    mod = moderate_comment(payload.content.strip())
+    if mod["status"] == "BLOCKED":
+        raise HTTPException(status_code=422, detail=mod["reason"])
     try:
         query = """
         DECLARE @NewCommentId BIGINT;

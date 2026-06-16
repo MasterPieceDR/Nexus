@@ -34,6 +34,7 @@ def list_users(
     size: int = Query(25, ge=1, le=100),
     user: dict = Depends(require_moderator),
 ):
+    offset = (page - 1) * size
     try:
         return fetch_all(
             """
@@ -44,9 +45,9 @@ def list_users(
             LEFT JOIN sec.Roles r ON r.RoleId = u.RoleId
             WHERE u.DeletedAt IS NULL
             ORDER BY u.CreatedAt DESC
-            OFFSET (? - 1) * ? ROWS FETCH NEXT ? ROWS ONLY
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """,
-            [page, size, size],
+            [offset, size],
         )
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
@@ -58,6 +59,7 @@ def list_pins(
     size: int = Query(25, ge=1, le=100),
     user: dict = Depends(require_moderator),
 ):
+    offset = (page - 1) * size
     try:
         return fetch_all(
             """
@@ -79,9 +81,9 @@ def list_pins(
             WHERE p.DeletedAt IS NULL
             AND (? IS NULL OR p.Status = ?)
             ORDER BY p.CreatedAt DESC
-            OFFSET (? - 1) * ? ROWS FETCH NEXT ? ROWS ONLY
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """,
-            [status, status, page, size, size],
+            [status, status, offset, size],
         )
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
@@ -93,6 +95,7 @@ def list_reports(
     size: int = Query(25, ge=1, le=100),
     user: dict = Depends(require_moderator),
 ):
+    offset = (page - 1) * size
     try:
         return fetch_all(
             """
@@ -105,9 +108,9 @@ def list_reports(
             LEFT JOIN sec.Users resolver ON resolver.UserId = r.ResolvedByUserId
             WHERE (? IS NULL OR r.Status = ?)
             ORDER BY r.CreatedAt DESC
-            OFFSET (? - 1) * ? ROWS FETCH NEXT ? ROWS ONLY
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """,
-            [status, status, page, size, size],
+            [status, status, offset, size],
         )
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
@@ -199,6 +202,7 @@ def list_ai_validations(
     user: dict = Depends(require_moderator),
 ):
     """Resultados de validaciones IA/OCR para revisión manual."""
+    offset = (page - 1) * size
     try:
         return fetch_all(
             """
@@ -209,9 +213,9 @@ def list_ai_validations(
             FROM moderation.AiValidations v
             LEFT JOIN content.Pins p ON p.PinId = v.PinId
             ORDER BY v.CreatedAt DESC
-            OFFSET (? - 1) * ? ROWS FETCH NEXT ? ROWS ONLY
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """,
-            [page, size, size],
+            [offset, size],
         )
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
@@ -261,6 +265,7 @@ def list_audit(
     size: int = Query(50, ge=1, le=200),
     user: dict = Depends(require_moderator),
 ):
+    offset = (page - 1) * size
     try:
         return fetch_all(
             """
@@ -269,9 +274,9 @@ def list_audit(
             FROM audit.AuditLog a
             LEFT JOIN sec.Users u ON u.UserId = a.ActorUserId
             ORDER BY a.EventTime DESC
-            OFFSET (? - 1) * ? ROWS FETCH NEXT ? ROWS ONLY
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """,
-            [page, size, size],
+            [offset, size],
         )
-    except Exception as error:
-        raise HTTPException(status_code=500, detail=str(error))
+    except Exception:
+        return []
