@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login, googleLogin, ldapLogin } from '../services/api';
+import { login, googleLogin, ldapLogin, GITHUB_CLIENT_ID } from '../services/api';
 import { LogIn, ArrowLeft, KeyRound, Building2, Mail, Lock, Globe, Server, ChevronRight } from 'lucide-react';
 import { useTheme } from '../contexts/theme-context';
 import NetworkBackground from '../components/NetworkBackground';
@@ -160,7 +160,7 @@ export default function Login() {
   const { isDarkMode, toggleTheme } = useTheme();
 
   const handleGitHubLogin = (forceNew = false) => {
-    const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+    const clientId = GITHUB_CLIENT_ID;
     if (forceNew) {
       localStorage.removeItem('nexus_prev_gh_user');
       setGhPrevUser('');

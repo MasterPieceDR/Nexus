@@ -25,6 +25,8 @@ class Settings(BaseSettings):
 
     GITHUB_CLIENT_ID: str = ""
     GITHUB_CLIENT_SECRET: str = ""
+    GITHUB_CLIENT_ID_HTTPS: str = ""
+    GITHUB_CLIENT_SECRET_HTTPS: str = ""
 
     BACKEND_PUBLIC_URL: str = "http://127.0.0.1:8000"
 

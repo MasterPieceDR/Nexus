@@ -6,13 +6,27 @@ const isLocal = window.location.hostname === 'localhost' ||
                 window.location.hostname.endsWith('.local') ||
                 !window.location.hostname;
 
+// El bucket S3 servido en plano HTTP no tiene proxy de API (a diferencia de CloudFront,
+// que reenvía /api/* al backend), así que ese host debe apuntar directo al backend EC2.
+const S3_HTTP_HOST = 'nexus-app-mateo-vivas-2026.s3-website.us-east-2.amazonaws.com';
+const S3_HTTP_BACKEND = 'http://18.225.212.74:8000';
+
 export const BACKEND_URL = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
   : (isLocal
       ? `http://${window.location.hostname || '127.0.0.1'}:8000`
-      : window.location.origin);
+      : window.location.hostname === S3_HTTP_HOST
+        ? S3_HTTP_BACKEND
+        : window.location.origin);
 
 const API_URL = `${BACKEND_URL}/api`;
+
+const GITHUB_CLIENT_IDS = {
+  'd1whfp0t32xx4q.cloudfront.net': import.meta.env.VITE_GITHUB_CLIENT_ID_HTTPS || '',
+  [S3_HTTP_HOST]: import.meta.env.VITE_GITHUB_CLIENT_ID_HTTP || import.meta.env.VITE_GITHUB_CLIENT_ID || '',
+};
+
+export const GITHUB_CLIENT_ID = GITHUB_CLIENT_IDS[window.location.hostname] || import.meta.env.VITE_GITHUB_CLIENT_ID || '';
 
 const DEFAULT_TIMEOUT_MS = 15000;
 const RETRYABLE_METHODS = new Set(['GET']);
@@ -247,7 +261,7 @@ export const microsoftCallback = async (payload) => {
 export const githubCallback = async (code) => {
   const data = await apiFetch('/auth/github/callback', {
     method: 'POST',
-    body: { code },
+    body: { code, client_id: GITHUB_CLIENT_ID },
     auth: false,
   });
   setSession(data);

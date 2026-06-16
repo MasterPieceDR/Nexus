@@ -12,18 +12,28 @@ logger = logging.getLogger("nexus.github_auth")
 
 class GitHubCallbackRequest(BaseModel):
     code: str
+    client_id: str | None = None
 
 @router.post("/callback")
 def github_callback(payload: GitHubCallbackRequest, request: Request, background_tasks: BackgroundTasks):
     ip_address = request.client.host if request.client else "Unknown"
     user_agent = request.headers.get("user-agent", "Unknown")
 
+    known_apps = {
+        settings.GITHUB_CLIENT_ID: settings.GITHUB_CLIENT_SECRET,
+        settings.GITHUB_CLIENT_ID_HTTPS: settings.GITHUB_CLIENT_SECRET_HTTPS,
+    }
+    client_id = payload.client_id or settings.GITHUB_CLIENT_ID
+    client_secret = known_apps.get(client_id)
+    if not client_id or not client_secret:
+        raise HTTPException(status_code=400, detail="Aplicación de GitHub no reconocida.")
+
     try:
         token_res = http_requests.post(
             "https://github.com/login/oauth/access_token",
             json={
-                "client_id": settings.GITHUB_CLIENT_ID,
-                "client_secret": settings.GITHUB_CLIENT_SECRET,
+                "client_id": client_id,
+                "client_secret": client_secret,
                 "code": payload.code,
             },
             headers={"Accept": "application/json"},

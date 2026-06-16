@@ -95,9 +95,9 @@ export default function Landing() {
               <span className="font-mono text-[10px] uppercase tracking-[0.35em] text-[#60A5FA]">Red Visual de Conocimiento</span>
             </span>
 
-            <h1 className="font-serif font-black uppercase leading-[0.82] tracking-tight text-white" style={{ fontSize: 'clamp(3.5rem,12vw,10rem)' }}>
+            <h1 className="font-serif font-black uppercase leading-[0.82] tracking-tight text-white" style={{ fontSize: 'clamp(2.1rem,12vw,10rem)' }}>
               El Universo<br />
-              <span className="inline-block pb-1 bg-gradient-to-r from-[#60A5FA] via-[#2563EB] to-[#60A5FA] bg-clip-text text-transparent" style={{ WebkitBackgroundClip: 'text', fontSize: 'clamp(3rem,10.5vw,9rem)' }}>del Conocimiento</span><br />
+              <span className="inline-block pb-1 bg-gradient-to-r from-[#60A5FA] via-[#2563EB] to-[#60A5FA] bg-clip-text text-transparent" style={{ WebkitBackgroundClip: 'text', fontSize: 'clamp(1.85rem,10.5vw,9rem)' }}>del Conocimiento</span><br />
               <span className="text-white/75">Visual.</span>
             </h1>
 
